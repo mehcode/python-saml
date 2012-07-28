@@ -17,9 +17,17 @@ Dependencies
 
 ### Runtime
  - __[lxml][]__ <br />
-   The lxml library is used for consuming and producing the XML elements 
+   The lxml library is used for consuming and producing the XML elements
    present in the SAML2 standard.
 
 [lxml]: http://pypi.python.org/pypi/lxml/
 
 ### Documentation
+
+License
+-------
+Unless otherwise noted, all files contained within this project are liensed
+under the MIT opensource license. See the included file LICENSE or visit
+[opensource.org][] for more information.
+
+[opensource.org]: http://opensource.org/licenses/MIT

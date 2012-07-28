@@ -1,6 +1,6 @@
 python-saml
 ===========
-_A python interface to produce and consume SAML2 messages._
+_A python interface to produce and consume Security Asserion Markup Language v2.0 (SAML2) messages._
 
 Features
 --------

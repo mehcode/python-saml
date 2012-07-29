@@ -260,6 +260,143 @@ class Statement(Type):
     __metaclass__ = abc.ABCMeta
 
 
+class AuthnContext(Type):
+    """
+    Specifies the context of an authentication event. The element can
+    contain an authentication context class reference,
+    """
+
+    class ClassRef:
+        """List of context classes defined by reference in SAML2."""
+
+        ## URI prefix.
+        _PREFIX = "urn:oasis:names:tc:SAML:2.0:ac:classes:"
+
+        ## A principal is authenticated through the use of a provided IP
+        ## address.
+        INTERNET_PROTOCOL = "{}InternetProtocol".format(_PREFIX)
+
+        ## A principal is authenticated through the use of a provided IP
+        ## address, in addition to a username/password.
+        INTERNET_PROTOCOL_PASSWORD = "{}InternetProtocolPassword".format(
+            _PREFIX)
+
+        ## The principal has authenticated using a password to a local
+        ## authentication authority, in order to acquire a Kerberos ticket.
+        ## That Kerberos ticket is then used for subsequent network
+        ## authentication.
+        KERBEROS = "{}Kerberos".format(_PREFIX)
+
+        ## Reflects no mobile customer registration procedures and an
+        ## authentication of the mobile device without requiring explicit
+        ## end-user interaction.
+        MOBILE_ONE_FACTOR_UNREGISTERED = (
+            "{}MobileOneFactorUnregistered".format(_PREFIX))
+
+        ## Reflects no mobile customer registration procedures and a
+        ## two-factor based authentication, such as secure device and user PIN.
+        MOBILE_TWO_FACTOR_UNREGISTERED = (
+            "{}MobileTwoFactorUnregistered".format(_PREFIX))
+
+        ## Reflects mobile contract customer registration procedures and a
+        ## single factor authentication.
+        MOBILE_ONE_FACTOR_CONTRACT = "{}MobileOneFactorContract".format(
+            _PREFIX)
+
+        ## Reflects mobile contract customer registration procedures and a
+        ## two-factor based authentication.
+        MOBILE_TWO_FACTOR_CONTRACT = "{}MobileTwoFactorContract".format(
+            _PREFIX)
+
+        ## The Password class is applicable when a principal authenticates to
+        ## an authentication authority through the presentation of a password
+        ## over an unprotected HTTP session.
+        PASSWORD = "{}Password".format(_PREFIX)
+
+        ## The PasswordProtectedTransport class is applicable when a principal
+        ## authenticates to an authentication authority through the
+        ## presentation of a password over a protected session.
+        PASSWORD_PROTECTED_TRANSPORT = "{}PasswordProtectedTransport".format(
+            _PREFIX)
+
+        ## A principal had authenticated to an authentication authority at
+        ## some point in the past using any authentication context supported
+        ## by that authentication authority.
+        PREVIOUS_SESSION = "{}PreviousSession".format(_PREFIX)
+
+        ## The principal authenticated by means of a digital signature where
+        ## the key was validated as part of an X.509 Public Key Infrastructure.
+        X509 = "{}X509".format(_PREFIX)
+
+        ## The principal authenticated by means of a digital signature where
+        ## key was validated as part of a PGP Public Key Infrastructure.
+        PGP = "{}PGP".format(_PREFIX)
+
+        ## The principal authenticated by means of a digital signature where
+        ## the key was validated via an SPKI Infrastructure.
+        SPKI = "{}SPKI".format(_PREFIX)
+
+        ## This context class indicates that the principal authenticated by
+        ## means of a digital signature according to the processing rules
+        ## specified in the XML Digital Signature specification [XMLSig].
+        XMLDSIG = "{}XMLDSig".format(_PREFIX)
+
+        ## A principal authenticates to an authentication authority using a
+        ## smartcard.
+        SMARTCARD = "{}Smartcard".format(_PREFIX)
+
+        ## A principal authenticates to an authentication authority through
+        ## a two-factor authentication mechanism using a smartcard with
+        ## enclosed private key and a PIN.
+        SMARTCARD_PKI = "{}SmartcardPKI".format(_PREFIX)
+
+        ## A principal uses an X.509 certificate stored in software to
+        ## authenticate to the authentication authority.
+        SOFTWARE_PKI = "{}SoftwarePKI".format(_PREFIX)
+
+        ## The principal authenticated via the provision of a fixed-line
+        ## telephone number, transported via a telephony protocol such as ADSL.
+        TELEPHONY = "{}Telephony".format(_PREFIX)
+
+        ## The principal is "roaming" (perhaps using a phone card) and
+        ## authenticates via the means of the line number, a user suffix,
+        ## and a password element.
+        NOMAD_TELEPHONY = "{}NomadTelephony".format(_PREFIX)
+
+        ## The principal authenticated via the provision of a fixed-line
+        ## telephone number and a user suffix, transported via a telephony
+        ## protocol such as ADSL.
+        PERSONAL_TELEPHONY = "{}PersonalTelephony".format(_PREFIX)
+
+        ## The principal authenticated via the means of the line number,
+        ## a user suffix, and a password element.
+        AUTHENTICATED_TELEPHONY = "{}AuthenticatedTelephony".format(_PREFIX)
+
+        ## The authentication was performed by means of Secure Remote Password
+        ## as specified in [RFC 2945].
+        SECURE_REMOTE_PASSWORD = "{}SecureRemotePassword".format(_PREFIX)
+
+        ## The principal authenticated by means of a client certificate,
+        ## secured with the SSL/TLS transport.
+        TLS_CLIENT = "{}TLSClient".format(_PREFIX)
+
+        ## A principal authenticates through a time synchronization token.
+        TIME_SYNC_TOKEN = "{}TimeSyncToken".format(_PREFIX)
+
+        ## The Unspecified class indicates that the authentication was
+        ## performed by unspecified means.
+        UNSPECIFIED = "{}Unspecified".format(_PREFIX)
+
+    ## A URI reference identifying an authentication context class that
+    ## describes the authentication context declaration that follows.
+    class_ref = schema.SimpleElement(
+        name="AuthnContextClassRef",
+        default=lambda: AuthnContext.ClassRef.UNSPECIFIED)
+
+    ## \todo <AuthnContextDecl> or <AuthnContextDeclRef>
+    ## \todo <AuthenticatingAuthority>
+
+
 class AuthnStatement(Statement):
     """
     Describes a statement by the SAML authority asserting that the assertion
@@ -267,7 +404,7 @@ class AuthnStatement(Statement):
     """
 
     ## Specifies the time at which the authentication took place.
-    authn_instant = schema.DateTimeAttribute(
+    instant = schema.DateTimeAttribute(
         "AuthnInstant",
         required=True,
         default=datetime.utcnow)
@@ -282,12 +419,14 @@ class AuthnStatement(Statement):
     session_not_on_or_after = schema.DateTimeAttribute("SessionNotOnOrAfter")
 
     ## \todo <SubjectLocality>
-    ## \todo <AuthnContext>
+
+    ## The context used by the authenticating authority up to and including
+    ## the authentication event that yielded this statement.
+    context = schema.Element(AuthnContext)
 
 ## \todo Element <AuthnStatement>
 
 ## \todo Element <SubjectLocality>
-## \todo Element <AuthnContext>
 ## \todo Element <AttributeStatement>
 ## \todo Element <Attribute>
 ## \todo Element <AttributeValue>

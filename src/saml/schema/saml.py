@@ -250,8 +250,42 @@ class Assertion(Type):
 ## \todo Element <OneTimeUse>
 ## \todo Element <ProxyRestriction>
 ## \todo Element <Advice>
-## \todo Element <Statement>
+
+class Statement(Type):
+    """
+    An extension point that allows other assertion-based applications to
+    reuse the SAML assertion framework.
+    """
+
+    __metaclass__ = abc.ABCMeta
+
+
+class AuthnStatement(Statement):
+    """
+    Describes a statement by the SAML authority asserting that the assertion
+    subject was authenticated by a particular means at a particular time.
+    """
+
+    ## Specifies the time at which the authentication took place.
+    authn_instant = schema.DateTimeAttribute(
+        "AuthnInstant",
+        required=True,
+        default=datetime.utcnow)
+
+    ## Specifies the index of a particular session between the principal
+    ## identified by the subject and the authenticating authority.
+    session_index = schema.Attribute("SessionIndex")
+
+    ## Specifies a time instant at which the session between the principal
+    ## identified by the subject and the SAML authority issuing this
+    ## statement MUST be considered ended.
+    session_not_on_or_after = schema.DateTimeAttribute("SessionNotOnOrAfter")
+
+    ## \todo <SubjectLocality>
+    ## \todo <AuthnContext>
+
 ## \todo Element <AuthnStatement>
+
 ## \todo Element <SubjectLocality>
 ## \todo Element <AuthnContext>
 ## \todo Element <AttributeStatement>

@@ -162,17 +162,17 @@ class Assertion(Type):
     ## \todo Element <ds:Signature>
 
     ## The subject of the statement(s) in the assertion.
-    subject = schema.Element(Subject)
+    #subject = schema.Element(Subject)
 
     ## Conditions that MUST be evaluated when assessing the validity of and/or
     ## when using the assertion.
-    conditions = schema.Element(Conditions)
+    #conditions = schema.Element(Conditions)
 
     ## Additional information related to the assertion that assists
     ## processing in certain situations but which MAY be ignored by
     ## applications that do not understand the advice or do not wish to make
     ## use of it.
-    advice = schema.Element(Advice)
+    #advice = schema.Element(Advice)
 
     ## The collection of statements asserted by this assertion.
-    statements = schema.Element(Statement, max_occurs=None)
+    #statements = schema.Element(Statement, max_occurs=None)

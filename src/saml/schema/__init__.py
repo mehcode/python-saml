@@ -79,7 +79,12 @@ class Element(object):
     """TODO
     """
 
-    def __init__(self, name, cls, min_occurs=0, max_occurs=1):
+    @classmethod
+    def fromxml(cls, xml):
+        """TODO"""
+        pass
+
+    def __init__(self, cls, min_occurs=0, max_occurs=1):
         """TODO"""
         ## Class object of the type (also represents the name).
         self.cls = cls
@@ -90,15 +95,56 @@ class Element(object):
         ## Number of elements that must be provided at a maximum.
         self.max_occurs = max_occurs
 
+    @staticmethod
+    def toxml(obj):
+        """
+        Generates an XML representation of this element from its defined
+        attributes and content.
+        """
+        # Instantiate an element maker tailored for this element
+        E = ElementMaker(
+            namespace=obj.namespace[1],
+            nsmap={obj.namespace[0]: obj.namespace[1]})
+
+        # Instantiate the XML element with its name
+        xml = E(obj.__class__.__name__)
+
+        # Append content if available
+        if hasattr(obj, "value"):
+            xml.text = str(obj.value)
+
+        # Append available attributes and elements
+        for name, value in obj.__dict__.items():
+            # Does this exist ?
+            attr = getattr(obj.__class__, name, None)
+            if attr is not None:
+                # Does this exist as an attribute ?
+                if isinstance(attr, Attribute):
+                    # Yes; set the attribute value
+                    xml.set(attr.name, attr.tostring(value))
+                # Or can this be serialized as XML ?
+                elif isinstance(attr, Element):
+                    # Append it as an XML element
+                    xml.append(attr.toxml(value))
+                # Or is this some kind of iterable ?
+                else:
+                    # Loop through and append all elements as XML
+                    # as we assume (and require) iterables to iterate over
+                    # an object that has a toxml() function.
+                    try:
+                        for item in value:
+                            xml.append(attr.toxml(item))
+                    except:
+                        # We have no idea what this... just fail silently
+                        pass
+
+        # Return constructed XML block
+        return xml
+
 
 class Type(object):
     """TODO
     """
-
-    @classmethod
-    def fromxml(cls, xml):
-        """TODO"""
-        pass
 
     def __init__(self, value=None, **kwargs):
         """TODO"""
@@ -123,48 +169,3 @@ class Type(object):
 
         # Update internal dictionary with provided values
         self.__dict__.update(**kwargs)
-
-    def toxml(self):
-        """
-        Generates an XML representation of this element from its defined
-        attributes and content.
-        """
-        # Instantiate an element maker tailored for this element
-        E = ElementMaker(
-            namespace=self.namespace[1],
-            nsmap={self.namespace[0]: self.namespace[1]})
-
-        # Instantiate the XML element with its name
-        xml = E(self.__class__.__name__)
-
-        # Append content if available
-        if hasattr(self, "value"):
-            xml.text = str(self.value)
-
-        # Append available attributes and elements
-        for name, value in self.__dict__.items():
-            # Does this exist ?
-            attr = getattr(self.__class__, name, None)
-            if attr is not None:
-                # Does this exist as an attribute ?
-                if isinstance(attr, Attribute):
-                    # Yes; set the attribute value
-                    xml.set(attr.name, attr.tostring(value))
-                # Or can this be serialized as XML ?
-                elif hasattr(value, "toxml"):
-                    # Append it as an XML element
-                    xml.append(value.toxml())
-                # Or is this some kind of iterable ?
-                else:
-                    # Loop through and append all elements as XML
-                    # as we assume (and require) iterables to iterate over
-                    # an object that has a toxml() function.
-                    try:
-                        for item in value:
-                            xml.append(item.toxml())
-                    except:
-                        # We have no idea what this... just fail silently
-                        pass
-
-        # Return constructed XML block
-        return xml

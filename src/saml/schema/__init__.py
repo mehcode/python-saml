@@ -144,6 +144,37 @@ class Element(object):
         return xml
 
 
+class SimpleElement(object):
+    """TODO
+    """
+
+    @classmethod
+    def fromxml(cls, xml):
+        """TODO"""
+        pass
+
+    @staticmethod
+    def toxml(obj):
+        """
+        Generates an XML representation of this element from its defined
+        attributes and content.
+        """
+        # Instantiate an element maker tailored for this element
+        E = ElementMaker(
+            namespace=obj.namespace[1],
+            nsmap={obj.namespace[0]: obj.namespace[1]})
+
+        # Instantiate the XML element maker with its name
+        xml = E(obj.name)
+
+        # Append content if available
+        if hasattr(obj, "value"):
+            xml.text = str(obj.value)
+
+        # Return constructed XML block
+        return xml
+
+
 class Type(object):
     """TODO
     """

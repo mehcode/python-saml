@@ -245,3 +245,20 @@ class Assertion(Type):
 
 
 ## \todo Element <EncryptedAssertion>
+## \todo Element <Condition>
+## \todo Elements <AudienceRestriction> and <Audience>
+## \todo Element <OneTimeUse>
+## \todo Element <ProxyRestriction>
+## \todo Element <Advice>
+## \todo Element <Statement>
+## \todo Element <AuthnStatement>
+## \todo Element <SubjectLocality>
+## \todo Element <AuthnContext>
+## \todo Element <AttributeStatement>
+## \todo Element <Attribute>
+## \todo Element <AttributeValue>
+## \todo Element <EncryptedAttribute>
+## \todo Element <AuthzDecisionStatement>
+## \todo Simple Type DecisionType
+## \todo Element <Action>
+## \todo Element <Evidence>

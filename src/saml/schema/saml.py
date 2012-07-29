@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ \file saml/schema/saml.py
 \brief Defines the XML data types for SAML2 in the saml namespace.
 
@@ -203,47 +204,6 @@ class Subject(Type):
     confirm = schema.Element(SubjectConfirmation)
 
 
-class Assertion(Type):
-    """Specifies the basic information that is common to all assertions."""
-
-    ## The version of this assertion. The identifier for the version of SAML
-    ## defined in this specification is "2.0".
-    version = schema.Attribute("Version", required=True, default=VERSION)
-
-    ## The identifier for this assertion.
-    id = schema.Attribute(
-        "ID",
-        required=True,
-        default=lambda: '_{}'.format(uuid4().hex))
-
-    ## The time instant of issue in UTC.
-    issue_instant = schema.DateTimeAttribute(
-        "IssueInstant",
-        required=True,
-        default=datetime.utcnow)
-
-    ## The SAML authority that is making the claim(s) in the assertion.
-    issuer = schema.Element(Issuer, min_occurs=1)
-
-    ## \todo Element <ds:Signature>
-
-    ## The subject of the statement(s) in the assertion.
-    subject = schema.Element(Subject)
-
-    ## Conditions that MUST be evaluated when assessing the validity of and/or
-    ## when using the assertion.
-    ## \todo conditions = schema.Element(Conditions)
-
-    ## Additional information related to the assertion that assists
-    ## processing in certain situations but which MAY be ignored by
-    ## applications that do not understand the advice or do not wish to make
-    ## use of it.
-    ## \todo advice = schema.Element(Advice)
-
-    ## The collection of statements asserted by this assertion.
-    #statements = schema.Element(Statement, max_occurs=None)
-
-
 ## \todo Element <EncryptedAssertion>
 ## \todo Element <Condition>
 ## \todo Elements <AudienceRestriction> and <Audience>
@@ -390,7 +350,7 @@ class AuthnContext(Type):
     ## A URI reference identifying an authentication context class that
     ## describes the authentication context declaration that follows.
     class_ref = schema.SimpleElement(
-        name="AuthnContextClassRef",
+        "AuthnContextClassRef",
         default=lambda: AuthnContext.ClassRef.UNSPECIFIED)
 
     ## \todo <AuthnContextDecl> or <AuthnContextDeclRef>
@@ -423,6 +383,47 @@ class AuthnStatement(Statement):
     ## The context used by the authenticating authority up to and including
     ## the authentication event that yielded this statement.
     context = schema.Element(AuthnContext)
+
+
+class Assertion(Type):
+    """Specifies the basic information that is common to all assertions."""
+
+    ## The version of this assertion. The identifier for the version of SAML
+    ## defined in this specification is "2.0".
+    version = schema.Attribute("Version", required=True, default=VERSION)
+
+    ## The identifier for this assertion.
+    id = schema.Attribute(
+        "ID",
+        required=True,
+        default=lambda: '_{}'.format(uuid4().hex))
+
+    ## The time instant of issue in UTC.
+    issue_instant = schema.DateTimeAttribute(
+        "IssueInstant",
+        required=True,
+        default=datetime.utcnow)
+
+    ## The SAML authority that is making the claim(s) in the assertion.
+    issuer = schema.Element(Issuer, min_occurs=1)
+
+    ## \todo Element <ds:Signature>
+
+    ## The subject of the statement(s) in the assertion.
+    subject = schema.Element(Subject)
+
+    ## Conditions that MUST be evaluated when assessing the validity of and/or
+    ## when using the assertion.
+    ## \todo conditions = schema.Element(Conditions)
+
+    ## Additional information related to the assertion that assists
+    ## processing in certain situations but which MAY be ignored by
+    ## applications that do not understand the advice or do not wish to make
+    ## use of it.
+    ## \todo advice = schema.Element(Advice)
+
+    ## The collection of statements asserted by this assertion.
+    statements = schema.Element(Statement, max_occurs=None)
 
 ## \todo Element <AuthnStatement>
 

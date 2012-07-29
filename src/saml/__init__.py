@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ \file saml/__init__.py
 \brief Defines package level variables.
 

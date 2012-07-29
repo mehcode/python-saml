@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ \file saml/schema/samlp.py
 \brief Defines the XML data types for SAML2 in the samlp namespace.
 

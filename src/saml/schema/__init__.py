@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ \file saml/schema/__init__.py
 \brief Defines helper classes for the schema package.
 
@@ -83,13 +84,19 @@ class Element(object):
         """TODO"""
         pass
 
-    def __init__(self, cls=Element, name=None, min_occurs=0, max_occurs=1):
+    def __init__(
+            self,
+            cls,
+            default=None,
+            min_occurs=0,
+            max_occurs=1):
         """TODO"""
-        ## Name of the attribute.
-        self.name = self.__class__.__name__ if name is None else name
-
         ## Class object of the type (also represents the name).
         self.cls = cls
+
+        ## A default value that can be used if none is defined by the
+        ## user.
+        self.default = default
 
         ## Number of elements that must be provided at a minimum.
         self.min_occurs = min_occurs
@@ -97,8 +104,8 @@ class Element(object):
         ## Number of elements that must be provided at a maximum.
         self.max_occurs = max_occurs
 
-    @staticmethod
-    def toxml(obj):
+    @classmethod
+    def toxml(cls, obj):
         """
         Generates an XML representation of this element from its defined
         attributes and content.
@@ -109,7 +116,7 @@ class Element(object):
             nsmap={obj.namespace[0]: obj.namespace[1]})
 
         # Instantiate the XML element maker with its name
-        xml = E(obj.name)
+        xml = E(obj.__class__.__name__)
 
         # Append content if available
         if hasattr(obj, "value"):
@@ -120,31 +127,35 @@ class Element(object):
             # Does this exist ?
             value = obj.__dict__.get(name)
             if value is not None:
-                # Does this exist as an attribute ?
-                if isinstance(attr, Attribute):
-                    # Yes; set the attribute value
+                # Attempt to set this as an attribute
+                try:
                     xml.set(attr.name, attr.tostring(value))
-                # Or can this be serialized as XML ?
-                elif isinstance(attr, Element):
-                    # Append it as an XML element
+                    continue
+                except:
+                    pass
+
+                # Loop through and append all elements as XML
+                # as we assume (and require) iterables to iterate over
+                # an object that has a toxml() function.
+                try:
+                    for item in value:
+                        xml.append(attr.toxml(item))
+                except:
+                    # We have no idea what this... just fail silently
+                    pass
+
+                # Or can this be directly serialized as XML ?
+                try:
                     xml.append(attr.toxml(value))
-                # Or is this some kind of iterable ?
-                else:
-                    # Loop through and append all elements as XML
-                    # as we assume (and require) iterables to iterate over
-                    # an object that has a toxml() function.
-                    try:
-                        for item in value:
-                            xml.append(attr.toxml(item))
-                    except:
-                        # We have no idea what this... just fail silently
-                        pass
+                    continue
+                except:
+                    pass
 
         # Return constructed XML block
         return xml
 
 
-class SimpleElement(object):
+class SimpleElement(Element):
     """TODO
     """
 
@@ -153,8 +164,17 @@ class SimpleElement(object):
         """TODO"""
         pass
 
+    def __init__(self, name, default=None):
+        """TODO"""
+        ## Name of the element.
+        self.name = name
+
+        ## A default value that can be used if none is defined by the
+        ## user.
+        self.default = default
+
     @staticmethod
-    def toxml(obj):
+    def toxml(self, obj):
         """
         Generates an XML representation of this element from its defined
         attributes and content.
@@ -165,7 +185,7 @@ class SimpleElement(object):
             nsmap={obj.namespace[0]: obj.namespace[1]})
 
         # Instantiate the XML element maker with its name
-        xml = E(obj.name)
+        xml = E(self.name)
 
         # Append content if available
         if hasattr(obj, "value"):
@@ -175,9 +195,16 @@ class SimpleElement(object):
         return xml
 
 
+class OrderedMeta(type):
+    def __init__(cls, name, bases, dct):
+        super(OrderedMeta, cls).__init__(name, bases, dct)
+
+
 class Type(object):
     """TODO
     """
+
+    __metaclass__ = OrderedMeta
 
     def __init__(self, value=None, **kwargs):
         """TODO"""
@@ -187,18 +214,16 @@ class Type(object):
 
         # Declare defaults
         for name, value in self.__class__.__dict__.items():
-            # Currently we only support defaults on attributes
-            if isinstance(value, Attribute):
-                # If there was a default provided
-                if value.default is not None:
-                    # Then supply it
-                    try:
-                        # Either it is a callable that will generate a
-                        # default
-                        self.__dict__[name] = value.default()
-                    except:
-                        # Or simply a scalar
-                        self.__dict__[name] = value.default
+            # If there was a default provided
+            if hasattr(value, 'default') and value.default is not None:
+                # Then supply it
+                try:
+                    # Either it is a callable that will generate a
+                    # default
+                    self.__dict__[name] = value.default()
+                except:
+                    # Or simply a scalar
+                    self.__dict__[name] = value.default
 
         # Update internal dictionary with provided values
         self.__dict__.update(**kwargs)

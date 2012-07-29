@@ -26,7 +26,6 @@
            CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
            SOFTWARE.
 """
-import abc
 from .. import VERSION
 from .. import schema
 from uuid import uuid4

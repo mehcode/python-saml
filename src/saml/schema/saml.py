@@ -200,7 +200,7 @@ class Subject(Type):
     id = schema.Element(BaseIDAbstractType)
 
     ## Information that allows the subject to be confirmed.
-    confirmation = schema.Element(SubjectConfirmation)
+    confirm = schema.Element(SubjectConfirmation)
 
 
 class Assertion(Type):

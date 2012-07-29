@@ -32,12 +32,12 @@ from uuid import uuid4
 from datetime import datetime
 
 
-class Element(schema.Element):
-    """Represents an element in this namespace."""
+class Type(schema.Type):
+    """Represents a type in this namespace."""
     namespace = ("saml", "urn:oasis:names:tc:SAML:2.0:assertion")
 
 
-class BaseIDAbstractType(schema.Type):
+class BaseIDAbstractType(Type):
     """
     Provides an extension point that allows applications to add new kinds of
     identifiers.
@@ -111,7 +111,7 @@ class NameIDType(BaseIDAbstractType):
     sp_provided_id = schema.Attribute("SPProvidedID")
 
 
-class NameID(Element, NameIDType):
+class NameID(NameIDType):
     """
     Is of type NameIDType (see Section 2.2.2), and is used in various SAML
     assertion constructs such as the <Subject> and <SubjectConfirmation>
@@ -123,7 +123,7 @@ class NameID(Element, NameIDType):
 ## \todo Type    : EncryptedElementType
 
 
-class Issuer(Element, NameIDType):
+class Issuer(NameIDType):
     """
     Provides information about the issuer of a SAML assertion or protocol
     message.
@@ -137,20 +137,12 @@ class Issuer(Element, NameIDType):
 ## \todo Element    : <AssertionIDRef>
 ## \todo Element    : <AssertionURIRef>
 
-
-class AssertionType(schema.Type):
-    """Specifies the basic information that is common to all assertions."""
-
-
-class Assertion(Element, AssertionType):
+class Assertion(Type):
     """Specifies the basic information that is common to all assertions."""
 
     ## The version of this assertion. The identifier for the version of SAML
     ## defined in this specification is "2.0".
-    version = schema.Attribute(
-        "Version",
-        required=True,
-        default=VERSION)
+    version = schema.Attribute("Version", required=True, default=VERSION)
 
     ## The identifier for this assertion.
     id = schema.Attribute(
@@ -159,10 +151,28 @@ class Assertion(Element, AssertionType):
         default=lambda: '_{}'.format(uuid4().hex))
 
     ## The time instant of issue in UTC.
-    issue_instant = schema.Attribute(
+    issue_instant = schema.DateTimeAttribute(
         "IssueInstant",
         required=True,
-        default=lambda: datetime.utcnow())
+        default=datetime.utcnow)
 
     ## The SAML authority that is making the claim(s) in the assertion.
-    issuer = Issuer(required=True)
+    issuer = schema.Element(Issuer, min_occurs=1)
+
+    ## \todo Element <ds:Signature>
+
+    ## The subject of the statement(s) in the assertion.
+    subject = schema.Element(Subject)
+
+    ## Conditions that MUST be evaluated when assessing the validity of and/or
+    ## when using the assertion.
+    conditions = schema.Element(Conditions)
+
+    ## Additional information related to the assertion that assists
+    ## processing in certain situations but which MAY be ignored by
+    ## applications that do not understand the advice or do not wish to make
+    ## use of it.
+    advice = schema.Element(Advice)
+
+    ## The collection of statements asserted by this assertion.
+    statements = schema.Element(Statement, max_occurs=None)

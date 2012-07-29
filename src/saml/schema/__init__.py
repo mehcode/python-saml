@@ -35,10 +35,12 @@ class Attribute(object):
 
     @staticmethod
     def fromstring(value):
+        """TODO"""
         return value
 
     @staticmethod
     def tostring(value):
+        """TODO"""
         return str(value)
 
     def __init__(
@@ -46,6 +48,7 @@ class Attribute(object):
             name,
             default=None,
             required=False):
+        """TODO"""
         ## Name of the attribute.
         self.name = name
 
@@ -63,14 +66,42 @@ class DateTimeAttribute(Attribute):
 
     @staticmethod
     def fromstring(value):
+        """TODO"""
         return dateutil.parse(value)
 
     @staticmethod
     def tostring(value):
+        """TODO"""
         return value.isoformat()
 
+
+class Element(object):
+    """TODO
+    """
+
+    def __init__(self, name, cls, min_occurs=0, max_occurs=1):
+        """TODO"""
+        ## Class object of the type (also represents the name).
+        self.cls = cls
+
+        ## Number of elements that must be provided at a minimum.
+        self.min_occurs = min_occurs
+
+        ## Number of elements that must be provided at a maximum.
+        self.max_occurs = max_occurs
+
+
 class Type(object):
+    """TODO
+    """
+
+    @classmethod
+    def fromxml(cls, xml):
+        """TODO"""
+        pass
+
     def __init__(self, value=None, **kwargs):
+        """TODO"""
         # Update value if provided
         if value is not None:
             self.value = value
@@ -92,12 +123,6 @@ class Type(object):
 
         # Update internal dictionary with provided values
         self.__dict__.update(**kwargs)
-
-
-class Element(object):
-    @classmethod
-    def fromxml(cls, xml):
-        pass
 
     def toxml(self):
         """

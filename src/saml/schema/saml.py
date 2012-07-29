@@ -26,6 +26,7 @@
            SOFTWARE.
 """
 import abc
+from .. import VERSION
 from .. import schema
 from uuid import uuid4
 from datetime import datetime
@@ -149,7 +150,7 @@ class Assertion(Element, AssertionType):
     version = schema.Attribute(
         "Version",
         required=True,
-        default="2.0")
+        default=VERSION)
 
     ## The identifier for this assertion.
     id = schema.Attribute(

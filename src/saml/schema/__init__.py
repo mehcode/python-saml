@@ -27,10 +27,9 @@
 """
 from lxml.builder import ElementMaker
 from datetime import datetime
-from collections import OrderedDict
 
 
-class Attribute:
+class Attribute(object):
     """Represents an attribute on an XML element."""
 
     @staticmethod
@@ -75,7 +74,7 @@ class DateTimeAttribute(Attribute):
         return value.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
-class Element:
+class Element(object):
     """TODO
     """
 
@@ -142,7 +141,7 @@ class Element:
         return xml
 
 
-class Type:
+class Type(object):
     """TODO
     """
 

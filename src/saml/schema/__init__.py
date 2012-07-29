@@ -30,6 +30,7 @@ import operator
 from lxml.builder import ElementMaker
 from datetime import datetime
 from collections import OrderedDict
+import inspect
 
 
 class Attribute(object):
@@ -137,7 +138,7 @@ class Element(object):
 
         # Construct sorted list of items
         sort = {}
-        for name, attr in obj.__class__.__dict__.items():
+        for name, attr in inspect.getmembers(obj.__class__):
             if hasattr(attr, 'index') and not name.startswith('__'):
                 sort.update({name: attr.index})
 
@@ -240,7 +241,7 @@ class Type(object):
             self.value = value
 
         # Declare defaults
-        for name, value in self.__class__.__dict__.items():
+        for name, value in inspect.getmembers(self.__class__):
             # If there was a default provided
             if hasattr(value, 'default') and value.default is not None:
                 # Then supply it

@@ -44,14 +44,12 @@ class BaseIDAbstractType(Type):
     identifiers.
     """
 
-    __metaclass__ = abc.ABCMeta
-
     ## The security or administrative domain that qualifies the name.
-    name_qualifier = schema.Attribute("NameQualifier")
+    name_qualifier = schema.Attribute(0, "NameQualifier")
 
     ## Further qualifies a name with the name of a service provider or
     ## affiliation of providers.
-    sp_name_qualifier = schema.Attribute("SPNameQualifier")
+    sp_name_qualifier = schema.Attribute(1, "SPNameQualifier")
 
 
 class NameIDType(BaseIDAbstractType):
@@ -104,12 +102,12 @@ class NameIDType(BaseIDAbstractType):
 
     ## A URI reference representing the classification of string-based
     ## identifier information.
-    format = schema.Attribute("Format", default=Format.UNSPECIFIED)
+    format = schema.Attribute(0, "Format", default=Format.UNSPECIFIED)
 
     ## A name identifier established by a service provider or affiliation of
     ## providers for the entity, if different from the primary name
     ## identifier given in the content of the element.
-    sp_provided_id = schema.Attribute("SPProvidedID")
+    sp_provided_id = schema.Attribute(1, "SPProvidedID")
 
 
 class NameID(NameIDType):
@@ -132,7 +130,7 @@ class Issuer(NameIDType):
 
     ## Overriding the usual rule for this element's type, if no Format value is
     ## provided with this element, then the value \ref ENTITY is in effect.
-    format = schema.Attribute("Format", default=NameID.Format.ENTITY)
+    format = schema.Attribute(0, "Format", default=NameID.Format.ENTITY)
 
 
 ## \todo Element    : <AssertionIDRef>
@@ -152,22 +150,22 @@ class SubjectConfirmationData(Type):
     ## \todo Support for arbitrary elements
 
     ## A time instant before which the subject cannot be confirmed.
-    not_before = schema.DateTimeAttribute("NotBefore")
+    not_before = schema.DateTimeAttribute(0, "NotBefore")
 
     ## A time instant at which the subject can no longer be confirmed.
-    not_on_or_after = schema.DateTimeAttribute("NotOnOrAfter")
+    not_on_or_after = schema.DateTimeAttribute(1, "NotOnOrAfter")
 
     ## A URI specifying the entity or location to which an attesting entity
     ## can present the assertion.
-    recipient = schema.Attribute("Recipient")
+    recipient = schema.Attribute(2, "Recipient")
 
     ## The ID of a SAML protocol message in response to which an attesting
     ## entity can present the assertion.
-    in_response_to = schema.Attribute("InResponseTo")
+    in_response_to = schema.Attribute(3, "InResponseTo")
 
     ## The network address/location from which an attesting entity can
     ## present the assertion.
-    address = schema.Attribute("Address")
+    address = schema.Attribute(4, "Address")
 
 
 class SubjectConfirmation(Type):
@@ -181,15 +179,15 @@ class SubjectConfirmation(Type):
 
     ## A URI reference that identifies a protocol or mechanism to be used to
     ## confirm the subject.
-    method = schema.Attribute("Method", required=True)
+    method = schema.Attribute(0, "Method", required=True)
 
     ## Identifies the entity expected to satisfy the enclosing subject
     ## confirmation requirements.
-    id = schema.Element(BaseIDAbstractType)
+    id = schema.Element(1, BaseIDAbstractType)
 
     ## Additional confirmation information to be used by a specific
     ## confirmation method.
-    data = schema.Element(SubjectConfirmationData)
+    data = schema.Element(2, SubjectConfirmationData)
 
 
 class Subject(Type):
@@ -198,10 +196,10 @@ class Subject(Type):
     statements in the assertion.
     """
     ## Identifies the subject.
-    id = schema.Element(BaseIDAbstractType)
+    id = schema.Element(0, BaseIDAbstractType)
 
     ## Information that allows the subject to be confirmed.
-    confirm = schema.Element(SubjectConfirmation)
+    confirm = schema.Element(1, SubjectConfirmation)
 
 
 ## \todo Element <EncryptedAssertion>
@@ -216,8 +214,6 @@ class Statement(Type):
     An extension point that allows other assertion-based applications to
     reuse the SAML assertion framework.
     """
-
-    __metaclass__ = abc.ABCMeta
 
 
 class AuthnContext(Type):
@@ -350,7 +346,8 @@ class AuthnContext(Type):
     ## A URI reference identifying an authentication context class that
     ## describes the authentication context declaration that follows.
     class_ref = schema.SimpleElement(
-        "AuthnContextClassRef",
+        index=0,
+        name="AuthnContextClassRef",
         default=lambda: AuthnContext.ClassRef.UNSPECIFIED)
 
     ## \todo <AuthnContextDecl> or <AuthnContextDeclRef>
@@ -365,24 +362,27 @@ class AuthnStatement(Statement):
 
     ## Specifies the time at which the authentication took place.
     instant = schema.DateTimeAttribute(
-        "AuthnInstant",
+        index=0,
+        name="AuthnInstant",
         required=True,
         default=datetime.utcnow)
 
     ## Specifies the index of a particular session between the principal
     ## identified by the subject and the authenticating authority.
-    session_index = schema.Attribute("SessionIndex")
+    session_index = schema.Attribute(1, "SessionIndex")
 
     ## Specifies a time instant at which the session between the principal
     ## identified by the subject and the SAML authority issuing this
     ## statement MUST be considered ended.
-    session_not_on_or_after = schema.DateTimeAttribute("SessionNotOnOrAfter")
+    session_not_on_or_after = schema.DateTimeAttribute(
+        index=2,
+        name="SessionNotOnOrAfter")
 
     ## \todo <SubjectLocality>
 
     ## The context used by the authenticating authority up to and including
     ## the authentication event that yielded this statement.
-    context = schema.Element(AuthnContext)
+    context = schema.Element(3, AuthnContext)
 
 
 class Assertion(Type):
@@ -390,27 +390,29 @@ class Assertion(Type):
 
     ## The version of this assertion. The identifier for the version of SAML
     ## defined in this specification is "2.0".
-    version = schema.Attribute("Version", required=True, default=VERSION)
+    version = schema.Attribute(0, "Version", required=True, default=VERSION)
 
     ## The identifier for this assertion.
     id = schema.Attribute(
-        "ID",
+        index=1,
+        name="ID",
         required=True,
         default=lambda: '_{}'.format(uuid4().hex))
 
     ## The time instant of issue in UTC.
     issue_instant = schema.DateTimeAttribute(
-        "IssueInstant",
+        index=2,
+        name="IssueInstant",
         required=True,
         default=datetime.utcnow)
 
     ## The SAML authority that is making the claim(s) in the assertion.
-    issuer = schema.Element(Issuer, min_occurs=1)
+    issuer = schema.Element(3, Issuer, min_occurs=1)
 
     ## \todo Element <ds:Signature>
 
     ## The subject of the statement(s) in the assertion.
-    subject = schema.Element(Subject)
+    subject = schema.Element(4, Subject)
 
     ## Conditions that MUST be evaluated when assessing the validity of and/or
     ## when using the assertion.
@@ -423,7 +425,7 @@ class Assertion(Type):
     ## \todo advice = schema.Element(Advice)
 
     ## The collection of statements asserted by this assertion.
-    statements = schema.Element(Statement, max_occurs=None)
+    statements = schema.Element(5, Statement, max_occurs=None)
 
 ## \todo Element <AuthnStatement>
 

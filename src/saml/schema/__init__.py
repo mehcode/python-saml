@@ -26,8 +26,10 @@
            CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
            SOFTWARE.
 """
+import operator
 from lxml.builder import ElementMaker
 from datetime import datetime
+from collections import OrderedDict
 
 
 class Attribute(object):
@@ -45,10 +47,16 @@ class Attribute(object):
 
     def __init__(
             self,
+            index,
             name,
             default=None,
             required=False):
         """TODO"""
+        ## Index of the type in the contained element.
+        ## NOTE: This is used to preserve declared order in a class; this can
+        ## be removed come python3.
+        self.index = index
+
         ## Name of the attribute.
         self.name = name
 
@@ -86,11 +94,17 @@ class Element(object):
 
     def __init__(
             self,
+            index,
             cls,
             default=None,
             min_occurs=0,
             max_occurs=1):
         """TODO"""
+        ## Index of the type in the contained element.
+        ## NOTE: This is used to preserve declared order in a class; this can
+        ## be removed come python3.
+        self.index = index
+
         ## Class object of the type (also represents the name).
         self.cls = cls
 
@@ -122,11 +136,20 @@ class Element(object):
         if hasattr(obj, "value"):
             xml.text = str(obj.value)
 
-        # Append available attributes and elements
+        # Construct sorted list of items
+        sort = {}
         for name, attr in obj.__class__.__dict__.items():
+            if hasattr(attr, 'index'):
+                sort.update({name: attr.index})
+
+        sort = sorted(sort.iteritems(), key=operator.itemgetter(1))
+        sort = [(x[0], obj.__dict__.get(x[0], None)) for x in sort]
+
+        # Append available attributes and elements
+        for name, value in sort:
             # Does this exist ?
-            value = obj.__dict__.get(name)
-            if value is not None:
+            attr = getattr(obj.__class__, name, None)
+            if attr is not None:
                 # Attempt to set this as an attribute
                 try:
                     xml.set(attr.name, attr.tostring(value))
@@ -164,8 +187,13 @@ class SimpleElement(Element):
         """TODO"""
         pass
 
-    def __init__(self, name, default=None):
+    def __init__(self, index, name, default=None):
         """TODO"""
+        ## Index of the type in the contained element.
+        ## NOTE: This is used to preserve declared order in a class; this can
+        ## be removed come python3.
+        self.index = index
+
         ## Name of the element.
         self.name = name
 
@@ -195,16 +223,9 @@ class SimpleElement(Element):
         return xml
 
 
-class OrderedMeta(type):
-    def __init__(cls, name, bases, dct):
-        super(OrderedMeta, cls).__init__(name, bases, dct)
-
-
 class Type(object):
     """TODO
     """
-
-    __metaclass__ = OrderedMeta
 
     def __init__(self, value=None, **kwargs):
         """TODO"""

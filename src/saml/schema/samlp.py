@@ -110,6 +110,75 @@ class StatusResponseType(Message):
 
 ## \todo Element <AuthnRequest>
 
+
+class AuthnRequest(RequestAbstractType):
+    """
+    To request that an identity provider issue an assertion with an
+    authentication statement, a presenter authenticates to that
+    identity provider (or relies on an existing security context) and sends
+    it an <AuthnRequest> message that describes the properties that the
+    resulting assertion needs to have to satisfy its purpose.
+    """
+    ## Specifies the requested subject of the resulting assertion(s).
+    subject = schema.Element(6, saml.Subject)
+
+    ## Specifies constraints on the name identifier to be used to represent
+    ## the requested subject.
+    #name_id_policy = schema.Element(7, NameIDPolicy)
+
+    ## \todo Element <saml:Conditions>
+
+    ## Specifies the requirements, if any, that the requester places on the
+    ## authentication context that applies to the responding provider's
+    ## authentication of the presenter.
+    #requested_authn_context = schema.Element(8, RequestedAuthnContext)
+
+    ## Specifies a set of identity providers trusted by the requester to
+    ## authenticate the presenter, as well as limitations and context related
+    ## to proxying of the <AuthnRequest> message to subsequent identity
+    ## providers by the responder.
+    #scoping = schema.Element(9, Scoping)
+
+    ## A Boolean value. If "true", the identity provider MUST authenticate
+    ## the presenter directly rather than rely on a previous security
+    ## context. If a value is not provided, the default is "false".
+    force_authn = schema.Attribute(10, "ForceAuthn")
+
+    ## A Boolean value. If "true", the identity provider and the user agent
+    ## itself MUST NOT visibly take control of the user interface from the
+    ## requester and interact with the presenter in a noticeable fashion.
+    is_passive = schema.Attribute(11, "IsPassive")
+
+    ## Indirectly identifies the location to which the <Response> message
+    ## should be returned to the requester.
+    assertion_consumer_service_index = schema.Attribute(
+        index=12,
+        name="AssertionConsumerServiceIndex")
+
+    ## Specifies by value the location to which the <Response> message
+    ## MUST be returned to the requester
+    assertion_consumer_service_url = schema.Attribute(
+        index=13,
+        name="AssertionConsumerServiceURL")
+
+    ## A URI reference that identifies a SAML protocol binding to be used
+    ## when returning the <Response> message.
+    protocol_binding = schema.Attribute(
+        index=14,
+        name="ProtocolBinding",
+        default=Type.namespace[1])
+
+    ## Indirectly identifies information associated with the requester
+    ## describing the SAML attributes the requester desires or requires to be
+    ## supplied by the identity provider in the <Response> message.
+    attribute_consuming_service_index = schema.Attribute(
+        index=15,
+        name="AttributeConsumingServiceIndex")
+
+    ## Specifies the human-readable name of the requester for use by the
+    ## presenter's user agent or the identity provider.
+    provider_name = schema.Attribute(16, "ProviderName")
+
 ## \todo Element <NameIDPolicy>
 ## \todo Element <Scoping>
 ## \todo Element <IDPList>

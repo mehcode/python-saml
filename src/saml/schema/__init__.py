@@ -148,8 +148,7 @@ class Element(object):
         for name, value in sort:
             # Does this exist ?
             attr = getattr(obj.__class__, name, None)
-            print(type(attr))
-            if attr is not None:
+            if attr is not None and value is not None:
                 # Attempt to set this as an attribute
                 try:
                     xml.set(attr.name, attr.tostring(value))

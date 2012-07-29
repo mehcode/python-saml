@@ -231,9 +231,16 @@ class StatusResponseType(Message):
 ## \todo Element <AttributeQuery>
 ## \todo Element <AuthzDecisionQuery>
 
-## \todo Element <Response>
 
-## \todo Element <AuthnRequest>
+class Response(StatusResponseType):
+    """
+    Used when a response consists of a list of zero or more assertions that
+    satisfy the request.
+    """
+
+    ## Specifies an assertion by value, or optionally an encrypted
+    ## assertion by value.
+    assertion = schema.Element(8, saml.Assertion, max_occurs=None)
 
 
 class AuthnRequest(RequestAbstractType):
@@ -244,6 +251,7 @@ class AuthnRequest(RequestAbstractType):
     it an <AuthnRequest> message that describes the properties that the
     resulting assertion needs to have to satisfy its purpose.
     """
+
     ## Specifies the requested subject of the resulting assertion(s).
     subject = schema.Element(6, saml.Subject)
 

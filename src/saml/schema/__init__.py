@@ -83,8 +83,11 @@ class Element(object):
         """TODO"""
         pass
 
-    def __init__(self, cls, min_occurs=0, max_occurs=1):
+    def __init__(self, cls=Element, name=None, min_occurs=0, max_occurs=1):
         """TODO"""
+        ## Name of the attribute.
+        self.name = self.__class__.__name__ if name is None else name
+
         ## Class object of the type (also represents the name).
         self.cls = cls
 
@@ -106,7 +109,7 @@ class Element(object):
             nsmap={obj.namespace[0]: obj.namespace[1]})
 
         # Instantiate the XML element maker with its name
-        xml = E(obj.__class__.__name__)
+        xml = E(obj.name)
 
         # Append content if available
         if hasattr(obj, "value"):

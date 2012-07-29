@@ -45,13 +45,10 @@ class BaseIDAbstractType(schema.Type):
     __metaclass__ = abc.ABCMeta
 
     ## The security or administrative domain that qualifies the name.
-    ## This attribute provides a means to federate names from disparate user
-    ## stores without collision.
     name_qualifier = schema.Attribute("NameQualifier")
 
     ## Further qualifies a name with the name of a service provider or
-    ## affiliation of providers. This attribute provides an additional means
-    ## to federate names on the basis of the relying party or parties.
+    ## affiliation of providers.
     sp_name_qualifier = schema.Attribute("SPNameQualifier")
 
 
@@ -104,11 +101,7 @@ class NameIDType(BaseIDAbstractType):
         TRANSIENT = "urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
 
     ## A URI reference representing the classification of string-based
-    ## identifier information. See Section 8.3 for the SAML-defined URI
-    ## references that MAY be used as the value of the Format attribute and
-    ## their associated descriptions and processing rules. Unless otherwise
-    ## specified by an element based on this type, if no Format value is
-    ## provided, then the value \ref unspecified is in effect.
+    ## identifier information.
     format = schema.Attribute("Format", default=Format.UNSPECIFIED)
 
     ## A name identifier established by a service provider or affiliation of
@@ -158,8 +151,7 @@ class Assertion(Element, AssertionType):
         required=True,
         default="2.0")
 
-    ## The identifier for this assertion. It is of type xs:ID, and MUST follow
-    ## the requirements specified in Section 1.3.4 for identifier uniqueness.
+    ## The identifier for this assertion.
     id = schema.Attribute(
         "ID",
         required=True,
@@ -172,5 +164,4 @@ class Assertion(Element, AssertionType):
         default=lambda: datetime.utcnow())
 
     ## The SAML authority that is making the claim(s) in the assertion.
-    ## The issuer SHOULD be unambiguous to the intended relying parties.
     issuer = Issuer(required=True)

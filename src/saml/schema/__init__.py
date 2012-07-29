@@ -133,10 +133,11 @@ class Element(object):
         xml = E(obj.__class__.__name__)
 
         # Append content if available
-        if hasattr(obj, "value"):
-            xml.text = str(obj.value)
+        if hasattr(obj, "text"):
+            xml.text = str(obj.text)
 
         # Construct sorted list of items
+        # TODO: Remove after we switch to python3
         sort = {}
         for name, attr in inspect.getmembers(obj.__class__):
             if hasattr(attr, 'index') and not name.startswith('__'):
@@ -234,11 +235,11 @@ class Type(object):
     """TODO
     """
 
-    def __init__(self, value=None, **kwargs):
+    def __init__(self, text=None, **kwargs):
         """TODO"""
         # Update value if provided
-        if value is not None:
-            self.value = value
+        if text is not None:
+            self.text = text
 
         # Declare defaults
         for name, value in inspect.getmembers(self.__class__):

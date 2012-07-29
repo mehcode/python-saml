@@ -83,10 +83,132 @@ class RequestAbstractType(Message):
     """
 
 
-## \todo Element <Status>
-## \todo Element <StatusCode>
-## \todo Element <StatusMessage>
 ## \todo Element <StatusDetail>
+
+
+class StatusCode(Type):
+    """
+    Specifies a code or a set of nested codes representing the status of the
+    corresponding request.
+    """
+
+    class Value:
+        """List of possible values."""
+        _PREFIX = "urn:oasis:names:tc:SAML:2.0:status:"
+
+        ## The request succeeded.
+        SUCCESS = "{}Success".format(_PREFIX)
+
+        ## The request could not be performed due to an error on the part of
+        ## the requester.
+        REQUESTER = "{}Requester".format(_PREFIX)
+
+        ## The SAML responder could not process the request because the
+        ## version of the request message was incorrect.
+        VERSION_MISMATCH = "{}VersionMismatch".format(_PREFIX)
+
+        ## The responding provider was unable to successfully authenticate
+        ## the principal.
+        AUTHN_FAILED = "{}AuthnFailed".format(_PREFIX)
+
+        ## Unexpected or invalid content was encountered.
+        INVALID_ATTR_NAME_OR_VALUE = "{}InvalidAttrNameOrValue".format(_PREFIX)
+
+        ## The responding provider cannot or will not support the requested
+        ## name identifier policy.
+        INVALID_NAME_ID_POLICY = "{}InvalidNameIDPolicy".format(_PREFIX)
+
+        ## The specified authentication context requirements cannot be met by
+        ## the responder.
+        NO_AUTHN_CONTEXT = "{}NoAuthnContext".format(_PREFIX)
+
+        ## Used by an intermediary to indicate that none of the supported
+        ## identity provider <Loc> elements in an <IDPList> can be resolved
+        ## or that none of the supported identity providers are available.
+        NO_AVAILABLE_IDP = "{}NoAvailableIDP".format(_PREFIX)
+
+        ## Indicates the responding provider cannot authenticate the
+        ## principal passively, as has been requested.
+        NO_PASSIVE = "{}NoPassive".format(_PREFIX)
+
+        ## Used by an intermediary to indicate that none of the
+        ## identity providers in an <IDPList> are supported by the
+        ## intermediary.
+        NO_SUPPORTED_IDP = "{}NoSupportedIDP".format(_PREFIX)
+
+        ## Used by a session authority to indicate to a session participant
+        ## that it was not able to propagate logout to all other session
+        ## participants.
+        PARTIAL_LOGOUT = "{}PartialLogout".format(_PREFIX)
+
+        ## Indicates that a responding provider cannot authenticate the
+        ## principal directly and is not permitted to proxy the request
+        ## further.
+        PROXY_COUNT_EXCEEDED = "{}ProxyCountExceeded".format(_PREFIX)
+
+        ## The SAML responder or SAML authority is able to process the
+        ## request but has chosen not to respond.
+        REQUEST_DENIED = "{}RequestDenied".format(_PREFIX)
+
+        ## The SAML responder or SAML authority does not support the request.
+        REQUEST_UNSUPPORTED = "{}RequestUnsupported".format(_PREFIX)
+
+        ## The SAML responder cannot process any requests with the
+        ## protocol version specified in the request.
+        REQUEST_VERSION_DEPRECATED = "{}RequestVersionDeprecated".format(
+            _PREFIX)
+
+        ## The SAML responder cannot process the request because the protocol
+        ## version specified in the request message is too low.
+        REQUEST_VERSION_TOO_LOW = "{}RequestVersionTooHigh".format(_PREFIX)
+
+        ## The SAML responder cannot process the request because the protocol
+        ## version specified in the request message is too high.
+        REQUEST_VERSION_TOO_HIGH = "{}RequestVersionTooLow".format(_PREFIX)
+
+        ## The resource value provided in the request message is invalid
+        ## or unrecognized.
+        RESOURCE_NOT_RECOGNIZED = "{}ResourceNotRecognized".format(_PREFIX)
+
+        ## The response message would contain more elements than the
+        ## SAML responder is able to return.
+        TOO_MANY_RESPONSES = "{}TooManyResponses".format(_PREFIX)
+
+        ## An entity that has no knowledge of a particular attribute
+        ## profile has been presented with an attribute drawn from that
+        ## profile.
+        UNKNOWN_ATTR_PROFILE = "{}UnknownAttrProfile".format(_PREFIX)
+
+        ## The responding provider does not recognize the principal
+        ## specified or implied by the request.
+        UNKNOWN_PRINCIPAL = "{}UnknownPrincipal".format(_PREFIX)
+
+        ## The SAML responder cannot properly fulfill the request using
+        ## the protocol binding specified in the request.
+        UNSUPPORTED_BINDING = "{}UnsupportedBinding".format(_PREFIX)
+
+    ## The status code value.
+    value = schema.Attribute(0, "Value", required=True)
+
+    ## \todo Element <StatusCode>
+
+
+class Status(Type):
+    """
+    Schema fragment defines the <Status> element and its StatusType
+    complex type.
+    """
+
+    ## A code representing the status of the activity carried out in
+    ## response to the corresponding request.
+    code = schema.Element(0, StatusCode, min_occurs=1)
+
+    ## A message which MAY be returned to an operator.
+    message = schema.SimpleElement(
+        index=1, name="StatusMessage", namespace=Type.namespace)
+
+    ## Additional information concerning the status of the request.
+    # \todo detail = schema.Element(2, StatusDetail)
 
 
 class StatusResponseType(Message):
@@ -98,6 +220,9 @@ class StatusResponseType(Message):
     ## A reference to the identifier of the request to which the response
     ## corresponds, if any.
     in_response_to = schema.Attribute(6, "InResponseTo")
+
+    ## A code representing the status of the corresponding request.
+    status = schema.Element(7, Status)
 
 ## \todo Element <AssertionIDRequest>
 ## \todo Element <SubjectQuery>

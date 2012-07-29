@@ -27,7 +27,6 @@
 """
 from lxml.builder import ElementMaker
 from datetime import datetime
-import dateutil
 from collections import OrderedDict
 
 
@@ -68,12 +67,12 @@ class DateTimeAttribute(Attribute):
     @staticmethod
     def fromstring(value):
         """TODO"""
-        return dateutil.parse(value)
+        return datetime.strptime(value, '%Y-%m-%dT%H:%M:%SZ')
 
     @staticmethod
     def tostring(value):
         """TODO"""
-        return value.isoformat()
+        return value.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 class Element:

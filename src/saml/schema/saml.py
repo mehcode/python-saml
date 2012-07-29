@@ -137,6 +137,72 @@ class Issuer(NameIDType):
 ## \todo Element    : <AssertionIDRef>
 ## \todo Element    : <AssertionURIRef>
 
+
+class SubjectConfirmationData(Type):
+    """
+    Specifies additional data that allows the subject to be confirmed or
+    constrains the circumstances under which the act of subject confirmation
+    can take place.
+    """
+
+    ## \todo Support for KeyInfoConfirmationDataType
+
+    ## \todo Support for arbitrary attributes
+    ## \todo Support for arbitrary elements
+
+    ## A time instant before which the subject cannot be confirmed.
+    not_before = schema.DateTimeAttribute("NotBefore")
+
+    ## A time instant at which the subject can no longer be confirmed.
+    not_on_or_after = schema.DateTimeAttribute("NotOnOrAfter")
+
+    ## A URI specifying the entity or location to which an attesting entity
+    ## can present the assertion.
+    recipient = schema.Attribute("Recipient")
+
+    ## The ID of a SAML protocol message in response to which an attesting
+    ## entity can present the assertion.
+    in_response_to = schema.DateTimeAttribute("InResponseTo")
+
+    ## The network address/location from which an attesting entity can
+    ## present the assertion.
+    address = schema.DateTimeAttribute("Address")
+
+
+class SubjectConfirmation(Type):
+    """
+    Provides the means for a relying party to verify the correspondence of the
+    subject of the assertion with the party with whom the relying party is
+    communicating.
+    """
+
+    ## \todo class Method: Enumeration of values available
+
+    ## A URI reference that identifies a protocol or mechanism to be used to
+    ## confirm the subject.
+    method = schema.Attribute("Method", required=True)
+
+    ## Identifies the entity expected to satisfy the enclosing subject
+    ## confirmation requirements.
+    id = schema.Element(BaseIDAbstractType)
+
+    ## Additional confirmation information to be used by a specific
+    ## confirmation method.
+    data = schema.Element(SubjectConfirmationData)
+
+
+class Subject(Type):
+    """
+    Specifies the principal that is the subject of all of the (zero or more)
+    statements in the assertion.
+    """
+    ## Identifies the subject.
+    id = schema.Element(BaseIDAbstractType)
+
+    ## Information that allows the subject to be confirmed.
+    confirmation = schema.Element(SubjectConfirmation)
+
+
 class Assertion(Type):
     """Specifies the basic information that is common to all assertions."""
 
@@ -162,17 +228,20 @@ class Assertion(Type):
     ## \todo Element <ds:Signature>
 
     ## The subject of the statement(s) in the assertion.
-    #subject = schema.Element(Subject)
+    subject = schema.Element(Subject)
 
     ## Conditions that MUST be evaluated when assessing the validity of and/or
     ## when using the assertion.
-    #conditions = schema.Element(Conditions)
+    ## \todo conditions = schema.Element(Conditions)
 
     ## Additional information related to the assertion that assists
     ## processing in certain situations but which MAY be ignored by
     ## applications that do not understand the advice or do not wish to make
     ## use of it.
-    #advice = schema.Element(Advice)
+    ## \todo advice = schema.Element(Advice)
 
     ## The collection of statements asserted by this assertion.
     #statements = schema.Element(Statement, max_occurs=None)
+
+
+## \todo Element <EncryptedAssertion>

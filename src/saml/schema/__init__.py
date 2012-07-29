@@ -106,7 +106,7 @@ class Element(object):
             namespace=obj.namespace[1],
             nsmap={obj.namespace[0]: obj.namespace[1]})
 
-        # Instantiate the XML element with its name
+        # Instantiate the XML element maker with its name
         xml = E(obj.__class__.__name__)
 
         # Append content if available

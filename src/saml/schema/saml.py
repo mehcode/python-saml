@@ -25,55 +25,15 @@
            CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
            SOFTWARE.
 """
+import inspect
 import abc
 from lxml.builder import ElementMaker
+from .. import schema
 
 
-## XML schema namespace URI.
-NAMESPACE = "urn:oasis:names:tc:SAML:2.0:assertion"
-
-
-## Instance of ElementMaker tailored to this namespace; used to
-## instantiate XML elements.
-_E = ElementMaker(namespace=NAMESPACE, nsmap={"saml": NAMESPACE})
-
-
-class Type:
-    def __init__(self):
-        pass
-
-
-class Element:
-    @classmethod
-    def fromxml(cls, xml):
-        pass
-
-    def toxml(self):
-        """
-        Generates an XML representation of this element from its defined
-        attributes and content.
-        """
-
-
-class Attribute:
-    pass
-
-
-class AttributeGroup:
-    pass
-
-
-class IDNameQualifiers(AttributeGroup):
-
-    class NameQualifier(Attribute):
-        pass
-
-    class SPNameQualifier(Attribute):
-        pass
-
-    attributes = [
-        NameQualifier,
-        SPNameQualifier]
+class Element(schema.Element):
+    """Represents an element in this namespace."""
+    namespace = ("saml", "urn:oasis:names:tc:SAML:2.0:assertion")
 
 
 class BaseIDAbstractType(Type):
@@ -84,7 +44,15 @@ class BaseIDAbstractType(Type):
 
     __metaclass__ = abc.ABCMeta
 
-    attribute_groups = [IDNameQualifiers]
+    ## The security or administrative domain that qualifies the name.
+    ## This attribute provides a means to federate names from disparate user
+    ## stores without collision.
+    name_qualifier = schema.Attribute("NameQualifier")
+
+    ## Further qualifies a name with the name of a service provider or
+    ## affiliation of providers. This attribute provides an additional means
+    ## to federate names on the basis of the relying party or parties.
+    sp_name_qualifier = schema.Attribute("SPNameQualifier")
 
 
 class NameIDType(BaseIDAbstractType):
@@ -97,24 +65,7 @@ class NameIDType(BaseIDAbstractType):
     provides the following optional attributes.
     """
 
-    class Format(Attribute):
-        """
-        A URI reference representing the classification of string-based
-        identifier information. See Section 8.3 for the SAML-defined URI
-        references that MAY be used as the value of the Format attribute and
-        their associated descriptions and processing rules. Unless otherwise
-        specified by an element based on this type, if no Format value is
-        provided, then the value \ref unspecified is in effect.
-
-        When a Format value other than one specified in Section 8.3 is used,
-        the content of an element of this type is to be interpreted according
-        to the definition of that format as provided outside of this
-        specification. If not otherwise indicated by the definition of the
-        format, issues of anonymity, pseudonymity, and the persistence of the
-        identifier with respect to the asserting and relying parties
-        are implementation-specific.
-        """
-
+    class Format:
         ## The interpretation of the attribute name is left to individual
         ## implementations.
         UNSPECIFIED = "urn:oasis:names:tc:SAML:1.0:nameid-format:unspecified"
@@ -152,23 +103,50 @@ class NameIDType(BaseIDAbstractType):
         ## temporary value by the relying party.
         TRANSIENT = "urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
 
-    class SPProvidedID(Attribute):
-        """
-        A name identifier established by a service provider or affiliation of
-        providers for the entity, if different from the primary name
-        identifier given in the content of the element.
-        """
+    ## A URI reference representing the classification of string-based
+    ## identifier information. See Section 8.3 for the SAML-defined URI
+    ## references that MAY be used as the value of the Format attribute and
+    ## their associated descriptions and processing rules. Unless otherwise
+    ## specified by an element based on this type, if no Format value is
+    ## provided, then the value \ref unspecified is in effect.
+    format = schema.Attribute("Format")
 
-    attributes = [
-        Format,
-        SPProvidedID]
-
-    content = str
+    ## A name identifier established by a service provider or affiliation of
+    ## providers for the entity, if different from the primary name
+    ## identifier given in the content of the element.
+    sp_provided_id = schema.Attribute("SPProvidedID")
 
 
 class NameID(Element, NameIDType):
     """
     Is of type NameIDType (see Section 2.2.2), and is used in various SAML
     assertion constructs such as the <Subject> and <SubjectConfirmation>
-    elements, and in various protocol messages
+    elements, and in various protocol messages.
     """
+
+
+## \todo Element : <EncryptedID>
+## \todo Type    : EncryptedElementType
+
+
+class Issuer(Element, NameIDType):
+    """
+    Provides information about the issuer of a SAML assertion or protocol
+    message.
+
+    Overriding the usual rule for this element's type, if no Format value is
+    provided with this element, then the value \ref ENTITY is in effect.
+    """
+    pass
+
+
+## \todo Element    : <AssertionIDRef>
+## \todo Element    : <AssertionURIRef>
+
+
+class AssertionType(Type):
+    """Specifies the basic information that is common to all assertions."""
+
+
+class Assertion(Element, AssertionType):
+    """Specifies the basic information that is common to all assertions."""

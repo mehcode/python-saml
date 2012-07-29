@@ -25,10 +25,10 @@
            CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
            SOFTWARE.
 """
-import inspect
 import abc
-from lxml.builder import ElementMaker
 from .. import schema
+from uuid import uuid4
+from datetime import datetime
 
 
 class Element(schema.Element):
@@ -36,7 +36,7 @@ class Element(schema.Element):
     namespace = ("saml", "urn:oasis:names:tc:SAML:2.0:assertion")
 
 
-class BaseIDAbstractType(Type):
+class BaseIDAbstractType(schema.Type):
     """
     Provides an extension point that allows applications to add new kinds of
     identifiers.
@@ -109,7 +109,7 @@ class NameIDType(BaseIDAbstractType):
     ## their associated descriptions and processing rules. Unless otherwise
     ## specified by an element based on this type, if no Format value is
     ## provided, then the value \ref unspecified is in effect.
-    format = schema.Attribute("Format")
+    format = schema.Attribute("Format", default=Format.UNSPECIFIED)
 
     ## A name identifier established by a service provider or affiliation of
     ## providers for the entity, if different from the primary name
@@ -133,20 +133,44 @@ class Issuer(Element, NameIDType):
     """
     Provides information about the issuer of a SAML assertion or protocol
     message.
-
-    Overriding the usual rule for this element's type, if no Format value is
-    provided with this element, then the value \ref ENTITY is in effect.
     """
-    pass
+
+    ## Overriding the usual rule for this element's type, if no Format value is
+    ## provided with this element, then the value \ref ENTITY is in effect.
+    format = schema.Attribute("Format", default=NameID.Format.ENTITY)
 
 
 ## \todo Element    : <AssertionIDRef>
 ## \todo Element    : <AssertionURIRef>
 
 
-class AssertionType(Type):
+class AssertionType(schema.Type):
     """Specifies the basic information that is common to all assertions."""
 
 
 class Assertion(Element, AssertionType):
     """Specifies the basic information that is common to all assertions."""
+
+    ## The version of this assertion. The identifier for the version of SAML
+    ## defined in this specification is "2.0".
+    version = schema.Attribute(
+        "Version",
+        required=True,
+        default="2.0")
+
+    ## The identifier for this assertion. It is of type xs:ID, and MUST follow
+    ## the requirements specified in Section 1.3.4 for identifier uniqueness.
+    id = schema.Attribute(
+        "ID",
+        required=True,
+        default=lambda: '_{}'.format(uuid4().hex))
+
+    ## The time instant of issue in UTC.
+    issue_instant = schema.Attribute(
+        "IssueInstant",
+        required=True,
+        default=lambda: datetime.utcnow())
+
+    ## The SAML authority that is making the claim(s) in the assertion.
+    ## The issuer SHOULD be unambiguous to the intended relying parties.
+    issuer = Issuer(required=True)

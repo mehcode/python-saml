@@ -28,9 +28,10 @@
 from lxml.builder import ElementMaker
 from datetime import datetime
 import dateutil
+from collections import OrderedDict
 
 
-class Attribute(object):
+class Attribute:
     """Represents an attribute on an XML element."""
 
     @staticmethod
@@ -75,7 +76,7 @@ class DateTimeAttribute(Attribute):
         return value.isoformat()
 
 
-class Element(object):
+class Element:
     """TODO
     """
 
@@ -114,10 +115,10 @@ class Element(object):
             xml.text = str(obj.value)
 
         # Append available attributes and elements
-        for name, value in obj.__dict__.items():
+        for name, attr in obj.__class__.__dict__.items():
             # Does this exist ?
-            attr = getattr(obj.__class__, name, None)
-            if attr is not None:
+            value = obj.__dict__.get(name)
+            if value is not None:
                 # Does this exist as an attribute ?
                 if isinstance(attr, Attribute):
                     # Yes; set the attribute value
@@ -142,7 +143,7 @@ class Element(object):
         return xml
 
 
-class Type(object):
+class Type:
     """TODO
     """
 

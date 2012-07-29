@@ -162,11 +162,11 @@ class SubjectConfirmationData(Type):
 
     ## The ID of a SAML protocol message in response to which an attesting
     ## entity can present the assertion.
-    in_response_to = schema.DateTimeAttribute("InResponseTo")
+    in_response_to = schema.Attribute("InResponseTo")
 
     ## The network address/location from which an attesting entity can
     ## present the assertion.
-    address = schema.DateTimeAttribute("Address")
+    address = schema.Attribute("Address")
 
 
 class SubjectConfirmation(Type):

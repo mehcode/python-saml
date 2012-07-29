@@ -118,8 +118,7 @@ class Element(object):
         ## Number of elements that must be provided at a maximum.
         self.max_occurs = max_occurs
 
-    @classmethod
-    def toxml(cls, obj):
+    def toxml(self, obj):
         """
         Generates an XML representation of this element from its defined
         attributes and content.
@@ -139,7 +138,7 @@ class Element(object):
         # Construct sorted list of items
         sort = {}
         for name, attr in obj.__class__.__dict__.items():
-            if hasattr(attr, 'index'):
+            if hasattr(attr, 'index') and not name.startswith('__'):
                 sort.update({name: attr.index})
 
         sort = sorted(sort.iteritems(), key=operator.itemgetter(1))
@@ -149,6 +148,7 @@ class Element(object):
         for name, value in sort:
             # Does this exist ?
             attr = getattr(obj.__class__, name, None)
+            print(type(attr))
             if attr is not None:
                 # Attempt to set this as an attribute
                 try:
@@ -157,12 +157,18 @@ class Element(object):
                 except:
                     pass
 
+                # Is this a raw string ?
+                if isinstance(value, basestring):
+                    xml.append(attr.toxml(value))
+                    continue
+
                 # Loop through and append all elements as XML
                 # as we assume (and require) iterables to iterate over
                 # an object that has a toxml() function.
                 try:
                     for item in value:
                         xml.append(attr.toxml(item))
+                    continue
                 except:
                     # We have no idea what this... just fail silently
                     pass
@@ -171,7 +177,7 @@ class Element(object):
                 try:
                     xml.append(attr.toxml(value))
                     continue
-                except:
+                except BaseException as x:
                     pass
 
         # Return constructed XML block
@@ -187,7 +193,7 @@ class SimpleElement(Element):
         """TODO"""
         pass
 
-    def __init__(self, index, name, default=None):
+    def __init__(self, index, name, namespace, default=None):
         """TODO"""
         ## Index of the type in the contained element.
         ## NOTE: This is used to preserve declared order in a class; this can
@@ -197,11 +203,13 @@ class SimpleElement(Element):
         ## Name of the element.
         self.name = name
 
+        ## Namespace of the element.
+        self.namespace = namespace
+
         ## A default value that can be used if none is defined by the
         ## user.
         self.default = default
 
-    @staticmethod
     def toxml(self, obj):
         """
         Generates an XML representation of this element from its defined
@@ -209,15 +217,14 @@ class SimpleElement(Element):
         """
         # Instantiate an element maker tailored for this element
         E = ElementMaker(
-            namespace=obj.namespace[1],
-            nsmap={obj.namespace[0]: obj.namespace[1]})
+            namespace=self.namespace[1],
+            nsmap={self.namespace[0]: self.namespace[1]})
 
         # Instantiate the XML element maker with its name
         xml = E(self.name)
 
         # Append content if available
-        if hasattr(obj, "value"):
-            xml.text = str(obj.value)
+        xml.text = str(obj)
 
         # Return constructed XML block
         return xml

@@ -348,6 +348,7 @@ class AuthnContext(Type):
     class_ref = schema.SimpleElement(
         index=0,
         name="AuthnContextClassRef",
+        namespace=Type.namespace,
         default=lambda: AuthnContext.ClassRef.UNSPECIFIED)
 
     ## \todo <AuthnContextDecl> or <AuthnContextDeclRef>

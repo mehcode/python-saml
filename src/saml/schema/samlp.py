@@ -39,6 +39,9 @@ class Message(saml.Message):
     """Specifies commonalities that are associated with all SAML protocols.
     """
 
+    class Meta:
+        namespace = Element.Meta.namespace
+
     ## URI reference indicating h this message has been sent.
     destination = schema.Attribute("Destination")
 

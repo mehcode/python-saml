@@ -299,7 +299,6 @@ class AuthenticationContext(Element):
 
     ## A URI reference identifying an authentication context class that
     ## describes the authentication context declaration that follows.
-
     reference = schema.SimpleElement(
         index=0,
         name="AuthnContextClassRef",

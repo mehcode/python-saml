@@ -302,7 +302,7 @@ class AuthenticationContext(Element):
     reference = schema.SimpleElement(
         index=0,
         name="AuthnContextClassRef",
-        namespace=Type.namespace,
+        namespace=Element.Meta.namespace,
         default=lambda: AuthenticationContext.Reference.UNSPECIFIED)
 
 

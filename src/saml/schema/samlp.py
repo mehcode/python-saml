@@ -46,7 +46,7 @@ class Message(saml.Message):
     destination = schema.Attribute("Destination")
 
     ## Indicates how consent has been obtained from a principal.
-    consent = schema.Attribute("Consent", 1)
+    consent = schema.Attribute("Consent")
 
     ## \todo Element <Extensions>
 
@@ -146,7 +146,7 @@ class Status(Element):
     code = StatusCode(meta__min_occurs=1)
 
     ## A message which may be returned to give further clarification.
-    message = schema.SimpleElement("StatusMessage", 1)
+    message = schema.SimpleElement("StatusMessage")
 
     # \todo Element <StatusDetail>
 
@@ -161,7 +161,7 @@ class StatusResponseType(Message):
     in_response_to = schema.Attribute("InResponseTo")
 
     ## A code representing the status of the corresponding request.
-    status = Status(meta__index=1)
+    status = Status()
 
 
 ## \todo Element <AssertionIDRequest>
@@ -196,35 +196,31 @@ class AuthenticationRequest(Message):
     ## \todo Element <Scoping>
 
     ## If true, the identity provider MUST authenticate.
-    is_forced = schema.BooleanAttribute("ForceAuthn", 1)
+    is_forced = schema.BooleanAttribute("ForceAuthn")
 
     ## If true, the identity provider itself MUST NOT visibly take control.
-    is_passive = schema.BooleanAttribute("IsPassive", 2)
+    is_passive = schema.BooleanAttribute("IsPassive")
 
     ## Indirectly identifies the location of where to send the response.
     assertion_consumer_service_index = schema.Attribute(
-        name="AssertionConsumerServiceIndex",
-        index=3)
+        "AssertionConsumerServiceIndex")
 
     ## Specifies the location to which the <Response> message must be sent.
     assertion_consumer_service_url = schema.Attribute(
-        name="AssertionConsumerServiceURL",
-        index=4)
+        "AssertionConsumerServiceURL")
 
     ## A URI reference that identifies a SAML protocol binding to be used.
     protocol_binding = schema.Attribute(
         name="ProtocolBinding",
-        index=5,
         required=True,
-        default=Element.namespace[1])
+        default=Element.Meta.namespace[1])
 
     ## Indirectly identifies the SAML attributes the requester desires.
     attribute_consuming_service_index = schema.Attribute(
-        name="AttributeConsumingServiceIndex",
-        index=6)
+        "AttributeConsumingServiceIndex")
 
     ## Specifies the human-readable name of the requester.
-    provider_name = schema.Attribute(16, "ProviderName")
+    provider_name = schema.Attribute("ProviderName")
 
 
 ## \todo Element <NameIDPolicy>
@@ -248,7 +244,7 @@ class ArtifactResponse(StatusResponseType):
     """
 
     ## The SAML protocol message being returned.
-    message = schema.AnyElement(min_occurs=1)
+    message = schema.Element(min_occurs=1)
 
 
 ## \todo Element <ManageNameIDRequest>
@@ -265,13 +261,13 @@ class LogoutRequest(Message):
     not_on_or_after = schema.DateTimeAttribute('NotOnOrAfter')
 
     ## An indication of the reason for the logout, as a URI reference.
-    reason = schema.Attribute('Reason', 1)
+    reason = schema.Attribute('Reason')
 
     ## The principal to terminate the session of.
-    id = saml.BaseIDAbstractType(meta__index=2)
+    id = saml.BaseIDAbstractType(meta__index=0)
 
     ## The identifier that indexes this session at the message recipient.
-    session = schema.SimpleElement('SessionIndex', 3)
+    session = schema.SimpleElement('SessionIndex', 1)
 
 
 class LogoutResponse(StatusResponseType):

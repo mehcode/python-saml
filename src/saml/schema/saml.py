@@ -41,10 +41,10 @@ class BaseIDAbstractType(Element):
     """
 
     ## The security or administrative domain that qualifies the name.
-    name_qualifier = schema.Attribute(0, "NameQualifier")
+    name_qualifier = schema.Attribute("NameQualifier")
 
     ## Further qualifies a name with the name of a service provider.
-    sp_name_qualifier = schema.Attribute(1, "SPNameQualifier")
+    sp_name_qualifier = schema.Attribute("SPNameQualifier", 1)
 
 
 class NameIDType(BaseIDAbstractType):
@@ -83,10 +83,10 @@ class NameIDType(BaseIDAbstractType):
         TRANSIENT = "{}transient".format(_PREFIX)
 
     ## A URI classification of string-based identifier information.
-    format = schema.Attribute(0, "Format", default=Format.UNSPECIFIED)
+    format = schema.Attribute("Format", default=Format.UNSPECIFIED)
 
     ## A name identifier established by a service provider.
-    sp_provided_id = schema.Attribute(1, "SPProvidedID")
+    sp_provided_id = schema.Attribute("SPProvidedID", 1)
 
 
 class NameID(NameIDType):
@@ -104,7 +104,7 @@ class Issuer(NameIDType):
     """
 
     ## If no Format value is provided, then the value ENTITY is in effect.
-    format = schema.Attribute(0, "Format", default=NameID.Format.ENTITY)
+    format = schema.Attribute("Format", default=NameID.Format.ENTITY)
 
 
 ## \todo Element    : <AssertionIDRef>
@@ -121,19 +121,19 @@ class SubjectConfirmationData(Element):
     ## \todo Support for arbitrary elements
 
     ## A time instant before which the subject cannot be confirmed.
-    not_before = schema.DateTimeAttribute(0, "NotBefore")
+    not_before = schema.DateTimeAttribute("NotBefore")
 
     ## A time instant at which the subject can no longer be confirmed.
-    not_on_or_after = schema.DateTimeAttribute(1, "NotOnOrAfter")
+    not_on_or_after = schema.DateTimeAttribute("NotOnOrAfter", 1)
 
     ## URI specifying to which an attesting entity can present the assertion.
-    recipient = schema.Attribute(2, "Recipient")
+    recipient = schema.Attribute("Recipient", 2)
 
     ## ID of a SAML message to the entity can present the assertion to.
-    in_response_to = schema.Attribute(3, "InResponseTo")
+    in_response_to = schema.Attribute("InResponseTo", 3)
 
     ## The network address to which the saml entity can present the assertion.
-    address = schema.Attribute(4, "Address")
+    address = schema.Attribute("Address", 4)
 
 
 class SubjectConfirmation(Element):
@@ -143,7 +143,7 @@ class SubjectConfirmation(Element):
     ## \todo class Method: Enumeration of values available
 
     ## URI reference that identifies a protocol to confirm the subject.
-    method = schema.Attribute(0, "Method", required=True)
+    method = schema.Attribute("Method", required=True)
 
     ## Identifies the entity expected to satisfy the enclosed requirements.
     id = BaseIDAbstractType(meta__index=1)
@@ -157,7 +157,7 @@ class Subject(Element):
     """
 
     ## Identifies the subject.
-    id = BaseIDAbstractType(meta__index=0)
+    id = BaseIDAbstractType()
 
     ## Information that allows the subject to be confirmed.
     confirm = SubjectConfirmation(meta__index=1)
@@ -300,9 +300,7 @@ class AuthenticationContext(Element):
     ## A URI reference identifying an authentication context class that
     ## describes the authentication context declaration that follows.
     reference = schema.SimpleElement(
-        index=0,
         name="AuthnContextClassRef",
-        namespace=Element.Meta.namespace,
         default=lambda: AuthenticationContext.Reference.UNSPECIFIED)
 
 
@@ -312,23 +310,25 @@ class AuthenticationStatement(Statement):
     subject was authenticated by a particular means at a particular time.
     """
 
+    class Meta:
+        name = 'AuthnStatement'
+
     ## Specifies the time at which the authentication took place.
     instant = schema.DateTimeAttribute(
-        index=0,
         name="AuthnInstant",
         required=True,
         default=datetime.utcnow)
 
     ## Specifies the index of a particular session between the principal
     ## identified by the subject and the authenticating authority.
-    session_index = schema.Attribute(1, "SessionIndex")
+    session_index = schema.Attribute("SessionIndex", 1)
 
     ## Specifies a time instant at which the session between the principal
     ## identified by the subject and the SAML authority issuing this
     ## statement MUST be considered ended.
     session_not_on_or_after = schema.DateTimeAttribute(
-        index=2,
-        name="SessionNotOnOrAfter")
+        name="SessionNotOnOrAfter",
+        index=2)
 
     ## \todo <SubjectLocality>
 
@@ -344,22 +344,21 @@ class Message(Element):
 
     ## The version of the schema used by this assertion.
     version = schema.Attribute(
-        index=0,
         name="Version",
         required=True,
         default=VERSION)
 
     ## The identifier for this assertion.
     id = schema.Attribute(
-        index=1,
         name="ID",
+        index=1,
         required=True,
         default=lambda: '_{}'.format(uuid4().hex))
 
     ## The time instant of issue, in UTC, for this assertion.
     issue_instant = schema.Attribute(
-        index=2,
         name="IssueInstant",
+        index=2,
         required=True,
         default=datetime.utcnow)
 
@@ -372,13 +371,13 @@ class Assertion(Message):
     """
 
     ## The subject of the statement(s) in the assertion.
-    subject = Subject(meta__index=4)
+    subject = Subject()
 
     ## \todo Element <Conditions>
     ## \todo Element <Advice>
 
     ## The collection of statements asserted by this assertion.
-    statements = Statement(meta__index=5, meta__max_occurs=None)
+    statements = Statement(meta__index=1, meta__max_occurs=None)
 
 
 ## \todo Element <SubjectLocality>

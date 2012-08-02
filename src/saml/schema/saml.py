@@ -28,7 +28,7 @@
 """
 from uuid import uuid4
 from datetime import datetime
-from .. import schema
+from .. import schema, VERSION
 
 
 class Element(schema.Element):
@@ -337,16 +337,15 @@ class AuthenticationStatement(Statement):
     context = AuthenticationContext(meta__index=3)
 
 
-class Assertion(Element):
-    """Specifies the basic information that is common to all assertions.
-    """
+class Message(Element):
+    """Specifies common information found in all SAML message."""
 
     ## The version of the schema used by this assertion.
     version = schema.Attribute(
         index=0,
         name="Version",
         required=True,
-        default=schema.VERSION)
+        default=VERSION)
 
     ## The identifier for this assertion.
     id = schema.Attribute(
@@ -355,7 +354,7 @@ class Assertion(Element):
         required=True,
         default=lambda: '_{}'.format(uuid4().hex))
 
-    ## The time instanct of issue, in UTC, for this assertion.
+    ## The time instant of issue, in UTC, for this assertion.
     issue_instant = schema.Attribute(
         index=2,
         name="IssueInstant",
@@ -364,6 +363,11 @@ class Assertion(Element):
 
     ## The SAML authority that is making the claim(s) in the assertion.
     issuer = Issuer(meta__index=3, meta__min_occurs=1)
+
+
+class Assertion(Message):
+    """Specifies the basic information that is common to all assertions.
+    """
 
     ## \todo Element <ds:Signature>
 

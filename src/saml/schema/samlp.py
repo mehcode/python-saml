@@ -196,10 +196,10 @@ class AuthenticationRequest(Message):
     ## \todo Element <Scoping>
 
     ## If true, the identity provider MUST authenticate.
-    is_forced = schema.Attribute("ForceAuthn", 1)
+    is_forced = schema.BooleanAttribute("ForceAuthn", 1)
 
     ## If true, the identity provider itself MUST NOT visibly take control.
-    is_passive = schema.Attribute("IsPassive", 2)
+    is_passive = schema.BooleanAttribute("IsPassive", 2)
 
     ## Indirectly identifies the location of where to send the response.
     assertion_consumer_service_index = schema.Attribute(
@@ -226,15 +226,58 @@ class AuthenticationRequest(Message):
     ## Specifies the human-readable name of the requester.
     provider_name = schema.Attribute(16, "ProviderName")
 
+
 ## \todo Element <NameIDPolicy>
 ## \todo Element <Scoping>
 ## \todo Element <IDPList>
 ## \todo Element <IDPEntry>
-## \todo Element <ArtifactResolve>
-## \todo Element <ArtifactResponse>
+
+
+class ArtifactResolve(Message):
+    """
+    Used to request that a SAML protocol message be returned in exchange
+    for a previously sent artifact.
+    """
+
+    ## Artifact value that the requester received and wishes to resolve.
+    artifact = schema.SimpleElement('Artifact')
+
+
+class ArtifactResponse(StatusResponseType):
+    """Contains a SAML message being returned from an ArtifactResolve message.
+    """
+
+    ## The SAML protocol message being returned.
+    message = schema.AnyElement(min_occurs=1)
+
+
 ## \todo Element <ManageNameIDRequest>
 ## \todo Element <ManageNameIDResponse>
-## \todo Element <LogoutRequest>
-## \todo Element <LogoutResponse>
+
+
+class LogoutRequest(Message):
+    """
+    A message a session participant or session authority to indicate that a
+    session has been terminated.
+    """
+
+    ## The time at which the request expires.
+    not_on_or_after = schema.DateTimeAttribute('NotOnOrAfter')
+
+    ## An indication of the reason for the logout, as a URI reference.
+    reason = schema.Attribute('Reason', 1)
+
+    ## The principal to terminate the session of.
+    id = saml.BaseIDAbstractType(meta__index=2)
+
+    ## The identifier that indexes this session at the message recipient.
+    session = schema.SimpleElement('SessionIndex', 3)
+
+
+class LogoutResponse(StatusResponseType):
+    """A response to indicate the success of a logout request."""
+    pass
+
+
 ## \todo Element <NameIDMappingRequest>
 ## \todo Element <NameIDMappingResponse>

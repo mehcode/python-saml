@@ -90,8 +90,7 @@ class NameIDType(BaseIDAbstractType):
 
 
 class NameID(NameIDType):
-    """Is the identifier used in various SAML assertion constructs.
-    """
+    """Is the identifier used in various SAML assertion constructs."""
     pass
 
 

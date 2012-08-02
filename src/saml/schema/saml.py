@@ -139,10 +139,23 @@ class SubjectConfirmation(Element):
     """Provides the means for a relying party to verify the subject.
     """
 
-    ## \todo class Method: Enumeration of values available
+    class Method:
+        """Enumeration of known values."""
+
+        ## URI namespace prefix of the values.
+        _PREFIX = 'urn:oasis:names:tc:SAML:2.0:cm:'
+
+        ## The subject is confirmed by the indicated data.
+        BEARER = '{}bearer'.format(_PREFIX)
+
+        ## The subject is confirmed by the holding of a key.
+        HOLDER_OF_KEY = '{}holder-of-key'.format(_PREFIX)
 
     ## URI reference that identifies a protocol to confirm the subject.
-    method = schema.Attribute("Method", required=True)
+    method = schema.Attribute(
+        name="Method",
+        required=True,
+        default=lambda: SubjectConfirmation.Method.BEARER)
 
     ## Identifies the entity expected to satisfy the enclosed requirements.
     id = BaseIDAbstractType(meta__index=1)

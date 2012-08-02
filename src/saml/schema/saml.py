@@ -340,6 +340,8 @@ class AuthenticationStatement(Statement):
 class Message(Element):
     """Specifies common information found in all SAML message."""
 
+    ## \todo Element <ds:Signature>
+
     ## The version of the schema used by this assertion.
     version = schema.Attribute(
         index=0,
@@ -368,8 +370,6 @@ class Message(Element):
 class Assertion(Message):
     """Specifies the basic information that is common to all assertions.
     """
-
-    ## \todo Element <ds:Signature>
 
     ## The subject of the statement(s) in the assertion.
     subject = Subject(meta__index=4)

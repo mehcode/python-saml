@@ -26,11 +26,11 @@
            CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
            SOFTWARE.
 """
-from .. import schema
 from . import saml
+from . import attribute, element
 
 
-class Element(schema.Element):
+class Element(element.Element):
     class Meta:
         namespace = ("samlp", "urn:oasis:names:tc:SAML:2.0:protocol")
 
@@ -43,10 +43,10 @@ class Message(saml.Message):
         namespace = Element.Meta.namespace
 
     ## URI reference indicating h this message has been sent.
-    destination = schema.Attribute("Destination")
+    destination = attribute.Attribute("Destination")
 
     ## Indicates how consent has been obtained from a principal.
-    consent = schema.Attribute("Consent")
+    consent = attribute.Attribute("Consent")
 
     ## \todo Element <Extensions>
 
@@ -133,7 +133,7 @@ class StatusCode(Element):
         UNSUPPORTED_BINDING = "{}UnsupportedBinding".format(_PREFIX)
 
     ## The status code value.
-    value = schema.Attribute("Value", required=True)
+    value = attribute.Attribute("Value", required=True)
 
     ## \todo Element <StatusCode>
 
@@ -146,7 +146,7 @@ class Status(Element):
     code = StatusCode(meta__min_occurs=1)
 
     ## A message which may be returned to give further clarification.
-    message = schema.SimpleElement("StatusMessage")
+    message = element.Simple("StatusMessage")
 
     # \todo Element <StatusDetail>
 
@@ -158,7 +158,7 @@ class StatusResponseType(Message):
     """
 
     ## A reference to the identifier of the initiating request.
-    in_response_to = schema.Attribute("InResponseTo")
+    in_response_to = attribute.Attribute("InResponseTo")
 
     ## A code representing the status of the corresponding request.
     status = Status()
@@ -196,31 +196,31 @@ class AuthenticationRequest(Message):
     ## \todo Element <Scoping>
 
     ## If true, the identity provider MUST authenticate.
-    is_forced = schema.BooleanAttribute("ForceAuthn")
+    is_forced = attribute.BooleanAttribute("ForceAuthn")
 
     ## If true, the identity provider itself MUST NOT visibly take control.
-    is_passive = schema.BooleanAttribute("IsPassive")
+    is_passive = attribute.BooleanAttribute("IsPassive")
 
     ## Indirectly identifies the location of where to send the response.
-    assertion_consumer_service_index = schema.Attribute(
+    assertion_consumer_service_index = attribute.Attribute(
         "AssertionConsumerServiceIndex")
 
     ## Specifies the location to which the <Response> message must be sent.
-    assertion_consumer_service_url = schema.Attribute(
+    assertion_consumer_service_url = attribute.Attribute(
         "AssertionConsumerServiceURL")
 
     ## A URI reference that identifies a SAML protocol binding to be used.
-    protocol_binding = schema.Attribute(
+    protocol_binding = attribute.Attribute(
         name="ProtocolBinding",
         required=True,
         default=Element.Meta.namespace[1])
 
     ## Indirectly identifies the SAML attributes the requester desires.
-    attribute_consuming_service_index = schema.Attribute(
+    attribute_consuming_service_index = attribute.Attribute(
         "AttributeConsumingServiceIndex")
 
     ## Specifies the human-readable name of the requester.
-    provider_name = schema.Attribute("ProviderName")
+    provider_name = attribute.Attribute("ProviderName")
 
 
 ## \todo Element <NameIDPolicy>
@@ -236,7 +236,7 @@ class ArtifactResolve(Message):
     """
 
     ## Artifact value that the requester received and wishes to resolve.
-    artifact = schema.SimpleElement('Artifact')
+    artifact = element.Simple('Artifact')
 
 
 class ArtifactResponse(StatusResponseType):
@@ -244,7 +244,7 @@ class ArtifactResponse(StatusResponseType):
     """
 
     ## The SAML protocol message being returned.
-    message = schema.Element(min_occurs=1)
+    message = element.Element(meta__min_occurs=1)
 
 
 ## \todo Element <ManageNameIDRequest>
@@ -258,16 +258,16 @@ class LogoutRequest(Message):
     """
 
     ## The time at which the request expires.
-    not_on_or_after = schema.DateTimeAttribute('NotOnOrAfter')
+    not_on_or_after = attribute.DateTimeAttribute('NotOnOrAfter')
 
     ## An indication of the reason for the logout, as a URI reference.
-    reason = schema.Attribute('Reason')
+    reason = attribute.Attribute('Reason')
 
     ## The principal to terminate the session of.
     id = saml.BaseIDAbstractType(meta__index=0)
 
     ## The identifier that indexes this session at the message recipient.
-    session = schema.SimpleElement('SessionIndex', 1)
+    session = element.Simple('SessionIndex', 1)
 
 
 class LogoutResponse(StatusResponseType):

@@ -146,7 +146,9 @@ class Status(Element):
     code = StatusCode(meta__min_occurs=1)
 
     ## A message which may be returned to give further clarification.
-    message = element.Simple("StatusMessage")
+    message = element.Simple(
+        name="StatusMessage",
+        namespace=Element.Meta.namespace)
 
     # \todo Element <StatusDetail>
 
@@ -236,7 +238,9 @@ class ArtifactResolve(Message):
     """
 
     ## Artifact value that the requester received and wishes to resolve.
-    artifact = element.Simple('Artifact')
+    artifact = element.Simple(
+        name='Artifact',
+        namespace=Message.Meta.namespace)
 
 
 class ArtifactResponse(StatusResponseType):
@@ -267,7 +271,10 @@ class LogoutRequest(Message):
     id = saml.BaseIDAbstractType(meta__index=0)
 
     ## The identifier that indexes this session at the message recipient.
-    session = element.Simple('SessionIndex', 1)
+    session = element.Simple(
+        name='SessionIndex',
+        index=1,
+        namespace=Message.Meta.namespace)
 
 
 class LogoutResponse(StatusResponseType):

@@ -57,8 +57,7 @@ class Element(object):
         # Add members from base classes, recursively
         for base in cls.__bases__:
             try:
-                b = base._get_ordered_members()
-                sorted.extend(b)
+                sorted.extend(base._get_ordered_members())
             except AttributeError:
                 # Reached object, we're done
                 pass
@@ -70,6 +69,8 @@ class Element(object):
                     sorted.append((value._meta.index, name, value))
                 else:
                     sorted.append((0, name, value))
+            if isinstance(value, Simple):
+                sorted.append((value.index, name, value))
             elif isinstance(value, attribute.Attribute):
                 sorted.append((0, name, value))
 
@@ -93,12 +94,18 @@ class Element(object):
         # Append elements
         for index, name, value in self._get_ordered_members():
             # Does this exist ?
-           # print(str(index) + ": " + name + ": " + repr(value))
             attr = self.__dict__.get(name)
             if attr is not None and value is not None:
                 # Attempt to set this as an attribute
                 try:
-                    xml.set(value.name, value.tostring(attr))
+                    xml.set(value.name, value.serialize(attr))
+                    continue
+                except:
+                    pass
+
+                # Attempt to set this as a simple element
+                try:
+                    xml.append(value.serialize(attr))
                     continue
                 except:
                     pass
@@ -106,16 +113,18 @@ class Element(object):
                 # Loop through and append all elements as XML
                 try:
                     for item in attr:
+                        # FIXME: This etree.XML(..) is stupid
                         xml.append(etree.XML(item.serialize()))
                     continue
-                except BaseException as x:
+                except:
                     pass
 
                 # Or can this be directly serialized as XML ?
                 try:
+                    # FIXME: This etree.XML(..) is stupid
                     xml.append(etree.XML(attr.serialize()))
                     continue
-                except BaseException as x:
+                except:
                     # We have no idea what this... just fail silently
                     pass
 
@@ -165,10 +174,33 @@ class Simple(object):
     Represents a 'simple' element that acts like an attribute of the object but
     is serialized and deserialized as an XML element.
     """
-    def __init__(self, name, default=None):
+    def __init__(self, name, index=None, namespace=None, default=None):
         """Initialize a simple element with constraints on its values."""
-        ## Name of the attribute.
+        ## Name of the simple.
         self.name = name
+
+        ## Namespace of the simple.
+        self.namespace = namespace
+
+        ## Index of the simple.
+        self.index = index if index is not None else 0
 
         ## A default value that can be used.
         self.default = default
+
+    def serialize(self, obj):
+        """Serialize the current element as text.
+        """
+        # Instantiate an element maker tailored for this element
+        E = ElementMaker(
+            namespace=self.namespace[1],
+            nsmap={self.namespace[0]: self.namespace[1]})
+
+        # Instantiate an XML element with its name
+        xml = E(self.name)
+
+        # Append content
+        xml.text = str(obj)
+
+        # Return constructed XML block
+        return xml

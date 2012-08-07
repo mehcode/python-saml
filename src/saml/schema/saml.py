@@ -314,6 +314,7 @@ class AuthenticationContext(Element):
     ## describes the authentication context declaration that follows.
     reference = element.Simple(
         name="AuthnContextClassRef",
+        namespace=Meta.namespace,
         default=lambda: AuthenticationContext.Reference.UNSPECIFIED)
 
 

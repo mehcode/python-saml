@@ -105,7 +105,7 @@ class Element(object):
 
                 # Attempt to set this as a simple element
                 try:
-                    xml.append(value.serialize(attr))
+                    xml.append(etree.XML(value.serialize(attr)))
                     continue
                 except:
                     pass
@@ -203,4 +203,4 @@ class Simple(object):
         xml.text = str(obj)
 
         # Return constructed XML block
-        return xml
+        return etree.tostring(xml)

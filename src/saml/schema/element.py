@@ -29,8 +29,6 @@
 import inspect
 from lxml.builder import ElementMaker
 from lxml import etree
-import operator
-from collections import OrderedDict
 from . import attribute
 
 

@@ -33,57 +33,6 @@ from collections import OrderedDict
 import inspect
 
 
-class Attribute(object):
-    """Represents an attribute on an XML element."""
-
-    @staticmethod
-    def fromstring(value):
-        """TODO"""
-        return value
-
-    @staticmethod
-    def tostring(value):
-        """TODO"""
-        return str(value)
-
-    def __init__(
-            self,
-            index,
-            name,
-            default=None,
-            required=False):
-        """TODO"""
-        ## Index of the type in the contained element.
-        ## NOTE: This is used to preserve declared order in a class; this can
-        ## be removed come python3.
-        self.index = index
-
-        ## Name of the attribute.
-        self.name = name
-
-        ## A default value that can be used if none is defined by the
-        ## user.
-        self.default = default
-
-        ## Whether to raise an exception upon producing as XML
-        ## if this attribute was not provided.
-        self.required = required
-
-
-class DateTimeAttribute(Attribute):
-    """Represents a date time attribute on an XML element."""
-
-    @staticmethod
-    def fromstring(value):
-        """TODO"""
-        return datetime.strptime(value, '%Y-%m-%dT%H:%M:%SZ')
-
-    @staticmethod
-    def tostring(value):
-        """TODO"""
-        return value.strftime('%Y-%m-%dT%H:%M:%SZ')
-
-
 class Element(object):
     """TODO
     """

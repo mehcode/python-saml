@@ -31,7 +31,7 @@ from . import attribute, element
 
 
 class Element(element.Element):
-    class Meta:
+    class Meta(element.Element.Meta):
         namespace = ("samlp", "urn:oasis:names:tc:SAML:2.0:protocol")
 
 
@@ -39,7 +39,7 @@ class Message(saml.Message):
     """Specifies commonalities that are associated with all SAML protocols.
     """
 
-    class Meta:
+    class Meta(saml.Message.Meta):
         namespace = Element.Meta.namespace
 
     ## URI reference indicating h this message has been sent.
@@ -184,7 +184,7 @@ class AuthenticationRequest(Message):
     """To request authentication with an identity provider.
     """
 
-    class Meta:
+    class Meta(Message.Meta):
         name = 'AuthnRequest'
 
     ## Specifies the requested subject of the resulting assertion(s).

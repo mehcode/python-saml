@@ -27,6 +27,11 @@
            SOFTWARE.
 """
 import inspect
+from lxml.builder import ElementMaker
+from lxml import etree
+import operator
+from collections import OrderedDict
+from . import attribute
 
 
 class Element(object):
@@ -37,6 +42,85 @@ class Element(object):
         """Base meta object if none is provided in derived object.
         """
         pass
+
+    @staticmethod
+    def deserialize(text):
+        """Deserialize the passed text as an element.
+        """
+        pass
+
+    @classmethod
+    def _get_ordered_members(cls):
+        """"""
+        sorted = []
+
+        # Add members from base classes, recursively
+        for base in cls.__bases__:
+            try:
+                b = base._get_ordered_members()
+                sorted.extend(b)
+            except AttributeError:
+                # Reached object, we're done
+                pass
+
+        # Add members from calling class
+        for name, value in cls.__dict__.items():
+            if isinstance(value, Element):
+                if hasattr(value, '_meta') and hasattr(value._meta, 'index'):
+                    sorted.append((value._meta.index, name, value))
+                else:
+                    sorted.append((0, name, value))
+            elif isinstance(value, attribute.Attribute):
+                sorted.append((0, name, value))
+
+        return sorted
+
+    def serialize(self):
+        """Serialize the current element as text.
+        """
+        # Instantiate an element maker tailored for this element
+        E = ElementMaker(
+            namespace=self._meta.namespace[1],
+            nsmap={self._meta.namespace[0]: self._meta.namespace[1]})
+
+        # Instantiate an XML element with its name
+        xml = E(self._meta.name)
+
+        # Append text, if available
+        if hasattr(self, "text"):
+            xml.text = str(self.text)
+
+        # Append elements
+        for index, name, value in self._get_ordered_members():
+            # Does this exist ?
+           # print(str(index) + ": " + name + ": " + repr(value))
+            attr = self.__dict__.get(name)
+            if attr is not None and value is not None:
+                # Attempt to set this as an attribute
+                try:
+                    xml.set(value.name, value.tostring(attr))
+                    continue
+                except:
+                    pass
+
+                # Loop through and append all elements as XML
+                try:
+                    for item in attr:
+                        xml.append(etree.XML(item.serialize()))
+                    continue
+                except BaseException as x:
+                    pass
+
+                # Or can this be directly serialized as XML ?
+                try:
+                    xml.append(etree.XML(attr.serialize()))
+                    continue
+                except BaseException as x:
+                    # We have no idea what this... just fail silently
+                    pass
+
+        # Return the XML element as string
+        return etree.tostring(xml)
 
     def __init__(self, text=None, **kwargs):
         """Instantiates an element reference.
@@ -56,6 +140,10 @@ class Element(object):
                 except:
                     # Or simply a scalar
                     self.__dict__[name] = value.default
+
+        # Default value for meta elements
+        self._meta.__dict__.update(inspect.getmembers(self._meta.__class__))
+        self._meta.name = self.__class__.__name__
 
         # Iterate through and update object dictionaries from passed values
         for name, value in kwargs.items():

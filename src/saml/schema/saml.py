@@ -33,7 +33,7 @@ from . import attribute, element
 
 
 class Element(element.Element):
-    class Meta:
+    class Meta(element.Element.Meta):
         namespace = ("saml", "urn:oasis:names:tc:SAML:2.0:assertion")
 
 
@@ -194,7 +194,7 @@ class AuthenticationContext(Element):
     """Specifies the context of an authentication event.
     """
 
-    class Meta:
+    class Meta(Element.Meta):
         name = 'AuthnContext'
 
     class Reference:
@@ -323,7 +323,7 @@ class AuthenticationStatement(Statement):
     subject was authenticated by a particular means at a particular time.
     """
 
-    class Meta:
+    class Meta(Statement.Meta):
         name = 'AuthnStatement'
 
     ## Specifies the time at which the authentication took place.

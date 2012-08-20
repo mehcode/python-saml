@@ -21,6 +21,7 @@ a.statements[0].context = saml.AuthenticationContext()
 a.statements[0].context.reference = saml.AuthenticationContext.Reference.PREVIOUS_SESSION
 
 p = samlp.Response(assertion=a)
+p.issuer = saml.Issuer("saml://concordus")
 p.in_response_to = "saml://crm"
 p.status = samlp.Status()
 p.status.code = samlp.StatusCode()
@@ -29,8 +30,15 @@ p.status.message = "Success; yes, that is all."
 
 x = samlp.Response.serialize(p)
 s = etree.tostring(x, pretty_print=True)
-
 print(s)
+e = etree.XML(s)
+c = samlp.Response.deserialize(e)
+
+print('--------------------------')
+x2 = samlp.Response.serialize(c)
+s2 = etree.tostring(x2, pretty_print=True)
+
+print(s2)
 
 #s = etree.tostring(schema.Element(0, samlp.Response).toxml(p), pretty_print=True)
 #print(s.decode('utf-8'))

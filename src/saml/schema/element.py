@@ -74,60 +74,99 @@ class Element(object):
 
         return sorted
 
-    def serialize(self):
-        """Serialize the current element as text.
-        """
-        # Instantiate an element maker tailored for this element
+    @classmethod
+    def serialize(cls, obj):
+        """Serializes the passed element into an XML representation."""
+        # Instantiate an element maker context
         E = ElementMaker(
-            namespace=self._meta.namespace[1],
-            nsmap={self._meta.namespace[0]: self._meta.namespace[1]})
+            namespace=obj._meta.namespace[1],
+            nsmap={obj._meta.namespace[0]: obj._meta.namespace[1]}
+        )
 
         # Instantiate an XML element with its name
-        xml = E(self._meta.name)
+        xml = E(obj._meta.name)
 
-        # Append text, if available
-        if hasattr(self, "text"):
-            xml.text = str(self.text)
+        # Append text content (if available)
+        if hasattr(obj, "text"):
+            xml.text = str(obj.text)
 
-        # Append elements
-        for index, name, value in self._get_ordered_members():
-            # Does this exist ?
-            attr = self.__dict__.get(name)
+        # Iterate through ordered list of members to serialize and append
+        for unused, name, value in cls._get_ordered_members():
+            # Was this member provided ?
+            attr = obj.__dict__.get(name)
             if attr is not None and value is not None:
-                # Attempt to set this as an attribute
-                try:
+                if isinstance(value, attribute.Attribute):
+                    # Set as an attribute if it is derived from
+                    # the base Attribute class.
                     xml.set(value.name, value.serialize(attr))
-                    continue
-                except:
-                    pass
+                elif isinstance(value, Element):
+                    # Serialize and append as an element if it is derived
+                    # from the base Element class
+                    try:
+                        # First; try appending several as an iterable
+                        for item in attr:
+                            xml.append(value.serialize(item))
+                    except TypeError:
+                        # Didn't work; this must be a singular element
+                        xml.append(value.serialize(attr))
 
-                # Attempt to set this as a simple element
-                try:
-                    xml.append(etree.XML(value.serialize(attr)))
-                    continue
-                except:
-                    pass
+        # Return serialized XML
+        return xml
 
-                # Loop through and append all elements as XML
-                try:
-                    for item in attr:
-                        # FIXME: This etree.XML(..) is stupid
-                        xml.append(etree.XML(item.serialize()))
-                    continue
-                except:
-                    pass
-
-                # Or can this be directly serialized as XML ?
-                try:
-                    # FIXME: This etree.XML(..) is stupid
-                    xml.append(etree.XML(attr.serialize()))
-                    continue
-                except:
-                    # We have no idea what this... just fail silently
-                    pass
-
-        # Return the XML element as string
-        return etree.tostring(xml)
+#    def serialize(self):
+#        """Serialize the current element as text.
+#        """
+#        # Instantiate an element maker tailored for this element
+#        E = ElementMaker(
+#            namespace=self._meta.namespace[1],
+#            nsmap={self._meta.namespace[0]: self._meta.namespace[1]})
+#
+#        # Instantiate an XML element with its name
+#        xml = E(self._meta.name)
+#
+#        # Append text, if available
+#        if hasattr(self, "text"):
+#            xml.text = str(self.text)
+#
+#        # Append elements
+#        for index, name, value in self._get_ordered_members():
+#            # Does this exist ?
+#            attr = self.__dict__.get(name)
+#            if attr is not None and value is not None:
+#                # Attempt to set this as an attribute
+#                try:
+#                    xml.set(value.name, value.serialize(attr))
+#                    continue
+#                except:
+#                    pass
+#
+#                # Attempt to set this as a simple element
+#                try:
+#                    xml.append(etree.XML(value.serialize(attr)))
+#                    continue
+#                except:
+#                    pass
+#
+#                # Loop through and append all elements as XML
+#                try:
+#                    for item in attr:
+#                        # FIXME: This etree.XML(..) is stupid
+#                        xml.append(etree.XML(item.serialize()))
+#                    continue
+#                except:
+#                    pass
+#
+#                # Or can this be directly serialized as XML ?
+#                try:
+#                    # FIXME: This etree.XML(..) is stupid
+#                    xml.append(etree.XML(attr.serialize()))
+#                    continue
+#                except:
+#                    # We have no idea what this... just fail silently
+#                    pass
+#
+#        # Return the XML element as string
+#        return etree.tostring(xml)
 
     def __init__(self, text=None, **kwargs):
         """Instantiates an element reference.
@@ -186,19 +225,19 @@ class Simple(object):
         ## A default value that can be used.
         self.default = default
 
-    def serialize(self, obj):
-        """Serialize the current element as text.
-        """
-        # Instantiate an element maker tailored for this element
-        E = ElementMaker(
-            namespace=self.namespace[1],
-            nsmap={self.namespace[0]: self.namespace[1]})
-
-        # Instantiate an XML element with its name
-        xml = E(self.name)
-
-        # Append content
-        xml.text = str(obj)
-
-        # Return constructed XML block
-        return etree.tostring(xml)
+#    def serialize(self, obj):
+#        """Serialize the current element as text.
+#        """
+#        # Instantiate an element maker tailored for this element
+#        E = ElementMaker(
+#            namespace=self.namespace[1],
+#            nsmap={self.namespace[0]: self.namespace[1]})
+#
+#        # Instantiate an XML element with its name
+#        xml = E(self.name)
+#
+#        # Append content
+#        xml.text = str(obj)
+#
+#        # Return constructed XML block
+#        return etree.tostring(xml)

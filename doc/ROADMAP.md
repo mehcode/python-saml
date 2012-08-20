@@ -3,7 +3,6 @@ Roadmap
 
 Version 0.1
 -----------
- - Consumption of XML messages
  - binding protocol defined for the following:
     - redirect
     - post

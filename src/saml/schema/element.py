@@ -31,6 +31,8 @@ from lxml.builder import ElementMaker
 from . import attribute
 from lxml import etree
 from StringIO import StringIO
+from copy import copy, deepcopy
+import itertools
 
 
 class Element(object):
@@ -45,29 +47,36 @@ class Element(object):
     @classmethod
     def _get_ordered_members(cls):
         """"""
-        sorted = []
+        ordered = []
 
         # Add members from base classes, recursively
         for base in cls.__bases__:
             try:
-                sorted.extend(base._get_ordered_members())
+                ordered.extend(base._get_ordered_members())
             except AttributeError:
                 # Reached object, we're done
                 pass
+
+        # Collect members of current cls into one list
+        sub = []
 
         # Add members from calling class
         for name, value in cls.__dict__.items():
             if isinstance(value, Element):
                 if hasattr(value, '_meta') and hasattr(value._meta, 'index'):
-                    sorted.append((value._meta.index, name, value))
+                    sub.append((value._meta.index, name, value))
                 else:
-                    sorted.append((0, name, value))
+                    sub.append((0, name, value))
             if isinstance(value, Simple):
-                sorted.append((value.index, name, value))
+                sub.append((value.index, name, value))
             elif isinstance(value, attribute.Attribute):
-                sorted.append((0, name, value))
+                sub.append((0, name, value))
 
-        return sorted
+        # Sort current class members before adding to main ordered list
+        ordered.extend(sorted(sub))
+
+        # Return list
+        return ordered
 
     @classmethod
     def serialize(cls, obj):
@@ -135,25 +144,20 @@ class Element(object):
                             meta = klass()._meta
                             key = '{}.{}'.format(meta.namespace[0], meta.name)
                             Element._name_cache[key] = klass
-                    except TypeError:
+                    except:
                         pass
 
         # Instantiate class
         obj = cls()
 
-        # Iterate through attributes in class
-        for name, member in inspect.getmembers(cls):
-            if isinstance(member, attribute.Attribute):
-                # Does this exist in the XML ?
-                value = xml.get(member.name)
-                if value is not None:
-                    # Yes; deserialize and set it
-                    obj.__dict__[name] = member.deserialize(value)
+        # Get list
+        elements = xml.getchildren()
+        index = 0
 
         # Iterate through ordered members
-        elements = iter(xml.getchildren())
         for unused, name, member in cls._get_ordered_members():
             if isinstance(member, Element):
+                store_index = index
                 try:
                     # Iterate N times; the -1 keeps the iteration
                     # until failure
@@ -161,7 +165,7 @@ class Element(object):
                     maximum = member._meta.max_occurs or -1
                     while iteration != maximum:
                         # Get element in question
-                        element = next(elements)
+                        element = elements[index]
 
                         # Invert nsmap dictionary
                         nsmap = {x: y for y, x in element.nsmap.items()}
@@ -174,6 +178,10 @@ class Element(object):
 
                         # Get klass from cache
                         klass = Element._name_cache[cachedname]
+
+                        # Fail safe; someone gave us garbage
+                        if not issubclass(klass, member.__class__):
+                            raise Exception()
 
                         # Deserialize using klass
                         kobj = klass.deserialize(element)
@@ -192,11 +200,29 @@ class Element(object):
 
                         # Increment counter
                         iteration += 1
-                except StopIteration:
+                        index += 1
+                except IndexError:
                     # Ran out of XML elements; might as well stop
                     break
+                except BaseException as ex:
+                    # Something went wrong; reset the iterator
+                    index = store_index
             elif isinstance(member, Simple):
-                obj.__dict__[name] = member.deserialize(member, next(elements))
+                # Get element in question
+                element = elements[index]
+
+                # Deserialize and store in the dict
+                obj.__dict__[name] = member.deserialize(member, element)
+
+                # Increment
+                index += 1
+            elif isinstance(member, attribute.Attribute):
+                # Does this exist in the XML ?
+                value = xml.get(member.name)
+                if value is not None:
+                    # Yes; deserialize and set it
+                    obj.__dict__[name] = member.deserialize(value)
+
 
         # Get simple content
         if xml.text and xml.text.strip():

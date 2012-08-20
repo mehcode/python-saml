@@ -28,7 +28,6 @@
 """
 import inspect
 from lxml.builder import ElementMaker
-from lxml import etree
 from . import attribute
 
 
@@ -99,10 +98,10 @@ class Element(object):
                     try:
                         # First; try appending several as an iterable
                         for item in attr:
-                            xml.append(value.serialize(item))
+                            xml.append(item.serialize(item))
                     except TypeError:
-                        # Didn't work; this must be a singular element
-                        xml.append(value.serialize(attr))
+                        # Didn't work; just serialize it
+                        xml.append(attr.serialize(attr))
                 elif isinstance(value, Simple):
                     # Serialize and append the simple element
                     xml.append(value.serialize(value, attr))

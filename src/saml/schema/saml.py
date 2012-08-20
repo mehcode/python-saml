@@ -187,7 +187,6 @@ class Subject(Element):
 class Statement(Element):
     """An extension point for statements made about a subject.
     """
-    pass
 
 
 class AuthenticationContext(Element):

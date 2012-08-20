@@ -20,13 +20,13 @@ a.statements[0].session_not_on_or_after = a.statements[0].instant + timedelta(mi
 a.statements[0].context = saml.AuthenticationContext()
 a.statements[0].context.reference = saml.AuthenticationContext.Reference.PREVIOUS_SESSION
 
-p = samlp.Response(assertion=a)
+p = samlp.Response(assertion=[a, a, a])
 p.issuer = saml.Issuer("saml://concordus")
 p.in_response_to = "saml://crm"
-#p.status = samlp.Status()
-#p.status.code = samlp.StatusCode()
-#p.status.code.value = samlp.StatusCode.Value.SUCCESS
-#p.status.message = "Success; yes, that is all."
+p.status = samlp.Status()
+p.status.code = samlp.StatusCode()
+p.status.code.value = samlp.StatusCode.Value.SUCCESS
+p.status.message = "Success; yes, that is all."
 
 x = samlp.Response.serialize(p)
 s = etree.tostring(x, pretty_print=True)
@@ -39,12 +39,3 @@ x2 = samlp.Response.serialize(c)
 s2 = etree.tostring(x2, pretty_print=True)
 
 print(s2)
-
-#s = etree.tostring(schema.Element(0, samlp.Response).toxml(p), pretty_print=True)
-#print(s.decode('utf-8'))
-#
-#r = samlp.AuthenticationRequest()
-#r.issuer = saml.Issuer("saml://crm")
-#
-#s = etree.tostring(schema.Element(0, samlp.AuthenticationRequest).toxml(r), pretty_print=True)
-#print(s.decode('utf-8'))

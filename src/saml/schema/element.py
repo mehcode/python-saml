@@ -29,6 +29,8 @@
 import inspect
 from lxml.builder import ElementMaker
 from . import attribute
+from lxml import etree
+from StringIO import StringIO
 
 
 class Element(object):
@@ -109,11 +111,97 @@ class Element(object):
         # Return serialized XML
         return xml
 
-    @staticmethod
-    def deserialize(text):
-        """Deserialize the passed text as an element.
-        """
-        pass
+    @classmethod
+    def deserialize(cls, xml):
+        """Deserialize the passed XML as an element."""
+        # Import neccessary files
+        from . import samlp, saml, md
+
+        # The name cache is used to find the class from from its meta name
+        # It is basically a dictionary in which the keys are the Meta.name
+        # and the values are the class objects. It makes deserialization
+        # actually possible in a speedy manner
+
+        # Is name cache available ?
+        if not hasattr(Element, '_name_cache'):
+            # Nope; create name cache
+            Element._name_cache = {}
+
+            # Iterate through list of classes
+            for module in (samlp, saml, md):
+                for klass in module.__dict__.values():
+                    try:
+                        if issubclass(klass, Element):
+                            meta = klass()._meta
+                            key = '{}.{}'.format(meta.namespace[0], meta.name)
+                            Element._name_cache[key] = klass
+                    except TypeError:
+                        pass
+
+        # Instantiate class
+        obj = cls()
+
+        # Iterate through attributes in class
+        for name, member in inspect.getmembers(cls):
+            if isinstance(member, attribute.Attribute):
+                # Does this exist in the XML ?
+                value = xml.get(member.name)
+                if value is not None:
+                    # Yes; deserialize and set it
+                    obj.__dict__[name] = member.deserialize(value)
+
+        # Iterate through ordered members
+        elements = iter(xml.getchildren())
+        for unused, name, member in cls._get_ordered_members():
+            if isinstance(member, Element):
+                try:
+                    # Iterate N times; the -1 keeps the iteration
+                    # until failure
+                    iteration = 0
+                    maximum = member._meta.max_occurs or -1
+                    while iteration != maximum:
+                        # Get element in question
+                        element = next(elements)
+
+                        # Invert nsmap dictionary
+                        nsmap = {x: y for y, x in element.nsmap.items()}
+
+                        # Get tag name and namespace
+                        tag = element.tag.split('{')[1].split('}')
+
+                        # Build name
+                        cachedname = '{}.{}'.format(nsmap[tag[0]], tag[1])
+
+                        # Get klass from cache
+                        klass = Element._name_cache[cachedname]
+
+                        # Deserialize using klass
+                        kobj = klass.deserialize(element)
+
+                        # Does this already exist in the obj
+                        if name in obj.__dict__:
+                            try:
+                                # Attempt to just append it
+                                obj.__dict__[name].append(kobj)
+                            except AttributeError:
+                                # Nope; make it a list first
+                                obj.__dict__[name] = [obj.__dict__[name], kobj]
+                        else:
+                            # Nope; put it there
+                            obj.__dict__[name] = kobj
+
+                        # Increment counter
+                        iteration += 1
+                except StopIteration:
+                    # Ran out of XML elements; might as well stop
+                    break
+
+        # Get simple content
+        if xml.text and xml.text.strip():
+            obj.text = xml.text.strip()
+
+        # Return instance
+        return obj
 
     def __init__(self, text=None, **kwargs):
         """Instantiates an element reference.
@@ -135,8 +223,10 @@ class Element(object):
                     self.__dict__[name] = value.default
 
         # Default value for meta elements
-        self._meta.__dict__.update(inspect.getmembers(self._meta.__class__))
         self._meta.name = self.__class__.__name__
+        self._meta.min_occurs = 0
+        self._meta.max_occurs = 1
+        self._meta.__dict__.update(inspect.getmembers(self._meta.__class__))
 
         # Iterate through and update object dictionaries from passed values
         for name, value in kwargs.items():

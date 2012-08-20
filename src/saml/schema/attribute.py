@@ -74,9 +74,9 @@ class DateTimeAttribute(Attribute):
     @staticmethod
     def deserialize(value):
         """Returns a datetime from the passed xs:dateTime XML value."""
-        return datetime.strptime(value, '%Y-%m-%dT%H:%M:%SZ')
+        return datetime.isoparse(value)
 
     @staticmethod
     def serialize(value):
         """Stringifys the passed value."""
-        return value.strftime('%Y-%m-%dT%H:%M:%SZ')
+        return value.isoformat()

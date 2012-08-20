@@ -29,10 +29,6 @@
 import inspect
 from lxml.builder import ElementMaker
 from . import attribute
-from lxml import etree
-from StringIO import StringIO
-from copy import copy, deepcopy
-import itertools
 
 
 class Element(object):
@@ -204,7 +200,7 @@ class Element(object):
                 except IndexError:
                     # Ran out of XML elements; might as well stop
                     break
-                except BaseException as ex:
+                except:
                     # Something went wrong; reset the iterator
                     index = store_index
             elif isinstance(member, Simple):

@@ -41,12 +41,6 @@ class Element(object):
         """
         pass
 
-    @staticmethod
-    def deserialize(text):
-        """Deserialize the passed text as an element.
-        """
-        pass
-
     @classmethod
     def _get_ordered_members(cls):
         """"""
@@ -109,64 +103,18 @@ class Element(object):
                     except TypeError:
                         # Didn't work; this must be a singular element
                         xml.append(value.serialize(attr))
+                elif isinstance(value, Simple):
+                    # Serialize and append the simple element
+                    xml.append(value.serialize(value, attr))
 
         # Return serialized XML
         return xml
 
-#    def serialize(self):
-#        """Serialize the current element as text.
-#        """
-#        # Instantiate an element maker tailored for this element
-#        E = ElementMaker(
-#            namespace=self._meta.namespace[1],
-#            nsmap={self._meta.namespace[0]: self._meta.namespace[1]})
-#
-#        # Instantiate an XML element with its name
-#        xml = E(self._meta.name)
-#
-#        # Append text, if available
-#        if hasattr(self, "text"):
-#            xml.text = str(self.text)
-#
-#        # Append elements
-#        for index, name, value in self._get_ordered_members():
-#            # Does this exist ?
-#            attr = self.__dict__.get(name)
-#            if attr is not None and value is not None:
-#                # Attempt to set this as an attribute
-#                try:
-#                    xml.set(value.name, value.serialize(attr))
-#                    continue
-#                except:
-#                    pass
-#
-#                # Attempt to set this as a simple element
-#                try:
-#                    xml.append(etree.XML(value.serialize(attr)))
-#                    continue
-#                except:
-#                    pass
-#
-#                # Loop through and append all elements as XML
-#                try:
-#                    for item in attr:
-#                        # FIXME: This etree.XML(..) is stupid
-#                        xml.append(etree.XML(item.serialize()))
-#                    continue
-#                except:
-#                    pass
-#
-#                # Or can this be directly serialized as XML ?
-#                try:
-#                    # FIXME: This etree.XML(..) is stupid
-#                    xml.append(etree.XML(attr.serialize()))
-#                    continue
-#                except:
-#                    # We have no idea what this... just fail silently
-#                    pass
-#
-#        # Return the XML element as string
-#        return etree.tostring(xml)
+    @staticmethod
+    def deserialize(text):
+        """Deserialize the passed text as an element.
+        """
+        pass
 
     def __init__(self, text=None, **kwargs):
         """Instantiates an element reference.
@@ -211,6 +159,25 @@ class Simple(object):
     Represents a 'simple' element that acts like an attribute of the object but
     is serialized and deserialized as an XML element.
     """
+
+    @classmethod
+    def serialize(cls, obj, value):
+        """Serializes the passed element as a 'simple' element."""
+        # Instantiate an element maker context
+        E = ElementMaker(
+            namespace=obj.namespace[1],
+            nsmap={obj.namespace[0]: obj.namespace[1]}
+        )
+
+        # Instantiate an XML element with its name
+        xml = E(obj.name)
+
+        # Append "simple" content
+        xml.text = str(value)
+
+        # Return constructed element
+        return xml
+
     def __init__(self, name, index=None, namespace=None, default=None):
         """Initialize a simple element with constraints on its values."""
         ## Name of the simple.
@@ -224,20 +191,3 @@ class Simple(object):
 
         ## A default value that can be used.
         self.default = default
-
-#    def serialize(self, obj):
-#        """Serialize the current element as text.
-#        """
-#        # Instantiate an element maker tailored for this element
-#        E = ElementMaker(
-#            namespace=self.namespace[1],
-#            nsmap={self.namespace[0]: self.namespace[1]})
-#
-#        # Instantiate an XML element with its name
-#        xml = E(self.name)
-#
-#        # Append content
-#        xml.text = str(obj)
-#
-#        # Return constructed XML block
-#        return etree.tostring(xml)

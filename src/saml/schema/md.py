@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ \file saml/schema/md.py
 \brief Defines the XML data types for SAML2 in the md namespace.
 

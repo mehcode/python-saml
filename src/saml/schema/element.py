@@ -195,6 +195,8 @@ class Element(object):
                 except StopIteration:
                     # Ran out of XML elements; might as well stop
                     break
+            elif isinstance(member, Simple):
+                obj.__dict__[name] = member.deserialize(member, next(elements))
 
         # Get simple content
         if xml.text and xml.text.strip():
@@ -248,6 +250,12 @@ class Simple(object):
     Represents a 'simple' element that acts like an attribute of the object but
     is serialized and deserialized as an XML element.
     """
+
+    @staticmethod
+    def deserialize(obj, xml):
+        """Deserializes the passed xml value."""
+        # Screw complicated; just return the value
+        return xml.text
 
     @classmethod
     def serialize(cls, obj, value):

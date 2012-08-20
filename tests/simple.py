@@ -23,17 +23,17 @@ a.statements[0].context.reference = saml.AuthenticationContext.Reference.PREVIOU
 p = samlp.Response(assertion=a)
 p.issuer = saml.Issuer("saml://concordus")
 p.in_response_to = "saml://crm"
-p.status = samlp.Status()
-p.status.code = samlp.StatusCode()
-p.status.code.value = samlp.StatusCode.Value.SUCCESS
-p.status.message = "Success; yes, that is all."
+#p.status = samlp.Status()
+#p.status.code = samlp.StatusCode()
+#p.status.code.value = samlp.StatusCode.Value.SUCCESS
+#p.status.message = "Success; yes, that is all."
 
 x = samlp.Response.serialize(p)
 s = etree.tostring(x, pretty_print=True)
 print(s)
 e = etree.XML(s)
 c = samlp.Response.deserialize(e)
-
+print(vars(c))
 print('--------------------------')
 x2 = samlp.Response.serialize(c)
 s2 = etree.tostring(x2, pretty_print=True)

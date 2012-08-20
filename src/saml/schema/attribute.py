@@ -27,6 +27,7 @@
            SOFTWARE.
 """
 from datetime import datetime
+import iso8601
 
 
 class Attribute(object):
@@ -74,7 +75,7 @@ class DateTimeAttribute(Attribute):
     @staticmethod
     def deserialize(value):
         """Returns a datetime from the passed xs:dateTime XML value."""
-        return datetime.isoparse(value)
+        return iso8601.parse_date(value)
 
     @staticmethod
     def serialize(value):

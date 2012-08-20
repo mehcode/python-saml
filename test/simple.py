@@ -8,7 +8,6 @@ a.subject = saml.Subject()
 a.subject.id = saml.NameID("leckey.ryan@gmail.com")
 a.subject.id.format = saml.NameID.Format.EMAIL
 a.subject.confirm = saml.SubjectConfirmation()
-a.subject.confirm.method = "..bearer.."
 a.subject.confirm.data = saml.SubjectConfirmationData()
 a.subject.confirm.data.address = "127.0.0.1"
 a.subject.confirm.data.in_response_to = "saml://crm"

@@ -29,7 +29,7 @@ class AssertionTest(unittest.TestCase):
         self.a.statements[1].context.reference = saml.AuthenticationContext.Reference.PREVIOUS_SESSION
         self.a.statements.append(saml.AuthenticationStatement())
         self.a.statements[2].session_not_on_or_after = self.a.statements[0].instant + timedelta(minutes=2)
-        self.a.statemeArtifactResponseTestnts[2].context = saml.AuthenticationContext()
+        self.a.statements[2].context = saml.AuthenticationContext()
         self.a.statements[2].context.reference = saml.AuthenticationContext.Reference.PREVIOUS_SESSION
 
 

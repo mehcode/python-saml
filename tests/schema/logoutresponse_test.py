@@ -5,16 +5,16 @@ from saml.schema import saml, samlp
 from datetime import datetime, timedelta
 """UNFINISHED"""
 
-class ArtifactResponseTest(unittest.TestCase):
+class LogoutResponseTest(unittest.TestCase):
     def setUp(self):
-        self.a = samlp.ArtifactResponse()
+        self.a = samlp.LogoutResponse()
         self.a.in_response_to = "_cce4ee768ed970b601f680f697989d14"
         self.a.status = samlp.Status()
         self.a.status.code = samlp.StatusCode()
         self.a.status.code.value = samlp.StatusCode.Value.SUCCESS
-        self.a.message = samlp.LogoutRequest()
+        self.a.session = '1'
 
-        self.p = samlp.ArtifactResponse(assertion=[self.a, self.a, self.a])
+        self.p = samlp.LogoutResponse(assertion=[self.a, self.a, self.a])
         self.p.issuer = saml.Issuer("saml://concordus")
         self.p.in_response_to = "saml://crm"
         self.p.status = samlp.Status()
@@ -22,18 +22,17 @@ class ArtifactResponseTest(unittest.TestCase):
         self.p.status.code.value = samlp.StatusCode.Value.SUCCESS
         self.p.status.message = "Success; yes, that is all."
 
-        self.x = samlp.ArtifactResponse.serialize(self.p)
+        self.x = samlp.LogoutResponse.serialize(self.p)
         self.s = etree.tostring(self.x, pretty_print=True)
-
 
     def runTest(self):
         #print self.a
 
         print(self.s)
         self.e = etree.XML(self.s)
-        self.c = samlp.ArtifactResponse.deserialize(self.e)
+        self.c = samlp.LogoutResponse.deserialize(self.e)
         print('--------------------------')
-        self.x2 = samlp.ArtifactResponse.serialize(self.c)
+        self.x2 = samlp.LogoutResponse.serialize(self.c)
         self.s2 = etree.tostring(self.x2, pretty_print=True)
 
         print(self.s2)

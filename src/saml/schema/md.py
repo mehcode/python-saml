@@ -38,8 +38,23 @@ class Element(element.Element):
 
 # """Element classes are being arranged in alphabetical order"""
 
-# class AttributeConsumingService(Element):
-# C    index = attribute.Attr
+class AffiliationDescriptor(Element):
+    affliation_owner_id = attribute.Attribute(
+        name="affiliationOwnerID",
+        required=True)
+    id = attribute.Attribute(
+        name="ID",
+        default=lambda: '_{}'.format(uuid4(), hex))
+    valid_until = attribute.Attribute("validUntil")
+    cache_duration = attribute.Attribute("cacheDuration")
+
+
+class AttributeConsumingService(Element):
+    index = attribute.Attribute(
+        name="index",
+        required=True)
+    is_default = attribute.Attribute("isDefault")
+
 
 
 class EndPointType(Element):
@@ -80,15 +95,15 @@ class RoleDescriptor(Element):
         name="id",
         default=lambda: '_{}'.format(uuid4(), hex))
 
-    validUntil = attribute.DateTimeAttribute("validUntil")
+    valid_until = attribute.DateTimeAttribute("validUntil")
 
-    cacheDuration = attribute.Attribute("cacheDuration")
+    cache_duration = attribute.Attribute("cacheDuration")
 
-    protocolsSupportEnumeration = attribute.Attribute(
+    protocols_support_enumeration = attribute.Attribute(
         name="protocolsSupportEnumeration",
         required=True)
 
-    errorURL = attribute.Attribute("errorURL")
+    error_url = attribute.Attribute("errorURL")
 
 
 class EntityDescriptor(EntitiesOrEntityDescriptor):
@@ -100,9 +115,9 @@ class EntityDescriptor(EntitiesOrEntityDescriptor):
         name="ID",
         default=lambda: '_{}'.format(uuid4(), hex))
 
-    validUntil = attribute.DateTimeAttribute("ValidUntil")
+    valid_until = attribute.DateTimeAttribute("ValidUntil")
 
-    cacheDuration = attribute.Attribute("CacheDuration")
+    cache_duration = attribute.Attribute("CacheDuration")
 
     name = attribute.Attribute("Name")
 
@@ -114,4 +129,7 @@ class IndexedEndpointType(EndPointType):
         name="index",
         required=True)
 
-    isDefault = attribute.Attribute("isDefault")
+    is_default = attribute.Attribute("isDefault")
+
+class RequestedAttribute(Element):
+    is_required = attribute.Attribute("isRequred")

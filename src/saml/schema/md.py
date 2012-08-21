@@ -38,6 +38,17 @@ class Element(element.Element):
 
 # """Element classes are being arranged in alphabetical order"""
 
+class AffiliationDescriptor(Element):
+    affliation_owner_id = attribute.Attribute(
+        name = "affiliationOwnerID",
+        required = True)
+    id = attribute.Attribute(
+        name = "ID",
+        default = lambda: '_{}'.format(uuid4(), hex))
+    valid_until = attribute.Attribute("validUntil")
+    cache_duration = attribute.Attribute("cacheDuration")
+
+
 class AttributeConsumingService(Element):
     index = attribute.Attribute(
         name = "index",
@@ -108,7 +119,10 @@ class EntityDescriptor(Element):
 
 class IndexedEndpointType(EndPointType):
     index = attribute.Attribute(
-        name="index",
-        required=True)
+        name = "index",
+        required = True)
 
     is_default = attribute.Attribute("isDefault")
+
+class RequestedAttribute(Element):
+    is_required = attribute.Attribute("isRequred")

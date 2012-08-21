@@ -7,12 +7,6 @@ from datetime import datetime, timedelta
 
 class ArtifactResponseTest(unittest.TestCase):
     def setUp(self):
-#        self.a = samlp.ArtifactResponse()
-#        self.a.in_response_to = "_cce4ee768ed970b601f680f697989d14"
-#        self.a.status = samlp.Status()
-#        self.a.status.code = samlp.StatusCode()
-#        self.a.status.code.value = samlp.StatusCode.Value.SUCCESS
-
         self.p = samlp.ArtifactResponse()
         self.p.issuer = saml.Issuer("saml://concordus")
         self.p.in_response_to = "saml://crm"

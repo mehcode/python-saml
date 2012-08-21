@@ -52,4 +52,21 @@ class EntitiesDescriptor(Element):
     validUntil = attribute.DateTimeAttribute("ValidUntil")
     cacheDuration = attribute..Attribute("CacheDuration")
     name = attribute.Attribute("Name")
+
+class EntityDescriptor(Element):
+    entityID = attribute.Attribute(
+        name = "entityID",
+        required = true)
+    id = attribute.Attribute(
+        name = "ID",
+        default = lambda: '_{}'.format(uuid4(),hex))
+    validUntil = attribute.DateTimeAttribute("ValidUntil")
+    cacheDuration = attribute..Attribute("CacheDuration")
+    name = attribute.Attribute("Name")
+    
+class IndexedEndpointType(EndPointType):
+    index = attribute.Attribute(
+        name = "index",
+        required = true)
+    isDefault = atttribute.Attribute("isDefault")
     

@@ -7,20 +7,20 @@ from datetime import datetime, timedelta
 
 class ArtifactResponseTest(unittest.TestCase):
     def setUp(self):
-        self.a = samlp.ArtifactResponse()
-        self.a.in_response_to = "_cce4ee768ed970b601f680f697989d14"
-        self.a.status = samlp.Status()
-        self.a.status.code = samlp.StatusCode()
-        self.a.status.code.value = samlp.StatusCode.Value.SUCCESS
-        self.a.message = samlp.LogoutRequest()
+#        self.a = samlp.ArtifactResponse()
+#        self.a.in_response_to = "_cce4ee768ed970b601f680f697989d14"
+#        self.a.status = samlp.Status()
+#        self.a.status.code = samlp.StatusCode()
+#        self.a.status.code.value = samlp.StatusCode.Value.SUCCESS
 
-        self.p = samlp.ArtifactResponse(assertion=[self.a, self.a, self.a])
+        self.p = samlp.ArtifactResponse()
         self.p.issuer = saml.Issuer("saml://concordus")
         self.p.in_response_to = "saml://crm"
         self.p.status = samlp.Status()
         self.p.status.code = samlp.StatusCode()
         self.p.status.code.value = samlp.StatusCode.Value.SUCCESS
         self.p.status.message = "Success; yes, that is all."
+        self.p.message = samlp.LogoutRequest()
 
         self.x = samlp.ArtifactResponse.serialize(self.p)
         self.s = etree.tostring(self.x, pretty_print=True)

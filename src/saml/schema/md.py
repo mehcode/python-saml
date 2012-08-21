@@ -35,6 +35,11 @@ class Element(element.Element):
     class Meta(element.Element.Meta):
         namespace = ("md", "urn:oasis:names:tc:SAML:2.0:metadata")
 
+"""Element classes are being arranged in alphabetical order"""
+
+class AttributeConsumingService(Element):
+    index = attribute.Attr
+
 class EndPointType(Element):
     binding = attribute.Attribute(
         name = "Binding",
@@ -61,7 +66,7 @@ class EntityDescriptor(Element):
         name = "ID",
         default = lambda: '_{}'.format(uuid4(),hex))
     validUntil = attribute.DateTimeAttribute("ValidUntil")
-    cacheDuration = attribute..Attribute("CacheDuration")
+    cacheDuration = attribute.Attribute("CacheDuration")
     name = attribute.Attribute("Name")
     
 class IndexedEndpointType(EndPointType):
@@ -69,4 +74,14 @@ class IndexedEndpointType(EndPointType):
         name = "index",
         required = true)
     isDefault = atttribute.Attribute("isDefault")
-    
+
+class RoleDescriptor(RoleDescriptor):
+    id = attribute.Attribute(
+        name = "id",
+        default =  lambda: '_{}'.format(uuid4(),hex))
+    validUntil = attribute.DateTimeAttribute("validUntil")
+    cacheDuration = attribute.Attribute("cacheDuration")
+    protocolsSupportEnumeration = attribute.Attribute(
+        name = "protocolsSupportEnumeration",
+        required = true)
+    errorURL = attribute.Attribute("errorURL")

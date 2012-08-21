@@ -26,3 +26,30 @@
            CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
            SOFTWARE.
 """
+from uuid import uuid4
+from datetime import datetime
+from .. import VERSION
+from . import attribute, element
+
+class Element(element.Element):
+    class Meta(element.Element.Meta):
+        namespace = ("md", "urn:oasis:names:tc:SAML:2.0:metadata")
+
+class EndPointType(Element):
+    binding = attribute.Attribute(
+        name = "Binding",
+        required = "true")
+    location = attribute.Attribute(
+        name = "Location",
+        required = true)
+    responselocation = attribute.Attribute(
+        name = "ResponseLocation")
+
+class EntitiesDescriptor(Element):
+    id = attribute.Attribute(
+        name = "ID",
+        default = lambda: '_{}'.format(uuid4(),hex))
+    validUntil = attribute.DateTimeAttribute("ValidUntil")
+    cacheDuration = attribute..Attribute("CacheDuration")
+    name = attribute.Attribute("Name")
+    

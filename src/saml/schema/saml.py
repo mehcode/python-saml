@@ -367,7 +367,7 @@ class Message(Element):
         default=lambda: '_{}'.format(uuid4().hex))
 
     ## The time instant of issue, in UTC, for this assertion.
-    issue_instant = attribute.Attribute(
+    issue_instant = attribute.DateTimeAttribute(
         name="IssueInstant",
         required=True,
         default=datetime.utcnow)
@@ -391,9 +391,39 @@ class Assertion(Message):
 
 
 ## \todo Element <SubjectLocality>
-## \todo Element <AttributeStatement>
-## \todo Element <Attribute>
-## \todo Element <AttributeValue>
+
+
+class Attribute(Element):
+    """Identifies an attribute by name and optionally includes its value(s).
+    """
+
+    ## The name of the attribute.
+    name = attribute.Attribute("Name", required=True)
+
+    ## A URI reference representing the classification of the attribute name
+    ## for purposes of interpreting the name.
+    # TODO: Enumerate possible values
+    name_format = attribute.Attribute("NameFormat")
+
+    ## A string that provides a more human-readable form of the attribute's
+    ## name, which may be useful in cases in which the actual Name is
+    ## complex or opaque, such as an OID or a UUID.
+    friendly_name = attribute.Attribute("FriendlyName")
+
+    ## Contains a value of the attribute.
+    # TODO: Allow multiple values
+    values = element.Simple('AttributeValue', namespace=Element.Meta.namespace)
+
+
+class AttributeStatement(Statement):
+    """
+    Describes a statement by the SAML authority asserting that the
+    assertion subject is associated with the specified attributes.
+    """
+
+    attributes = Attribute(meta__max_occurs=None)
+
+
 ## \todo Element <EncryptedAttribute>
 ## \todo Element <AuthzDecisionStatement>
 ## \todo Simple Type DecisionType

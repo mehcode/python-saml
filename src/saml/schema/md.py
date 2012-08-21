@@ -37,51 +37,51 @@ class Element(element.Element):
 
 """Element classes are being arranged in alphabetical order"""
 
-class AttributeConsumingService(Element):
-    index = attribute.Attr
+# class AttributeConsumingService(Element):
+#     index = attribute.Attr
 
 class EndPointType(Element):
     binding = attribute.Attribute(
-        name = "Binding",
-        required = True)
+        name="Binding",
+        required=True)
     location = attribute.Attribute(
-        name = "Location",
-        required = True)
+        name="Location",
+        required=True)
     responselocation = attribute.Attribute(
-        name = "ResponseLocation")
+        name="ResponseLocation")
 
 class EntitiesDescriptor(Element):
     id = attribute.Attribute(
-        name = "ID",
-        default = lambda: '_{}'.format(uuid4(),hex))
+        name="ID",
+        default=lambda: '_{}'.format(uuid4(), hex))
     validUntil = attribute.DateTimeAttribute("ValidUntil")
-    cacheDuration = attribute..Attribute("CacheDuration")
+    cacheDuration = attribute.Attribute("CacheDuration")
     name = attribute.Attribute("Name")
 
 class EntityDescriptor(Element):
     entityID = attribute.Attribute(
-        name = "entityID",
-        required = True)
+        name="entityID",
+        required=True)
     id = attribute.Attribute(
-        name = "ID",
-        default = lambda: '_{}'.format(uuid4(),hex))
+        name="ID",
+        default=lambda: '_{}'.format(uuid4(), hex))
     validUntil = attribute.DateTimeAttribute("ValidUntil")
     cacheDuration = attribute.Attribute("CacheDuration")
     name = attribute.Attribute("Name")
-    
+
 class IndexedEndpointType(EndPointType):
     index = attribute.Attribute(
-        name = "index",
-        required = True)
-    isDefault = atttribute.Attribute("isDefault")
+        name="index",
+        required=True)
+    isDefault = attribute.Attribute("isDefault")
 
-class RoleDescriptor(RoleDescriptor):
+class RoleDescriptor(Element):
     id = attribute.Attribute(
-        name = "id",
-        default =  lambda: '_{}'.format(uuid4(),hex))
+        name="id",
+        default=lambda: '_{}'.format(uuid4(), hex))
     validUntil = attribute.DateTimeAttribute("validUntil")
     cacheDuration = attribute.Attribute("cacheDuration")
     protocolsSupportEnumeration = attribute.Attribute(
-        name = "protocolsSupportEnumeration",
-        required = True)
+        name="protocolsSupportEnumeration",
+        required=True)
     errorURL = attribute.Attribute("errorURL")

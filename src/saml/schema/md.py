@@ -85,6 +85,8 @@ class EntitiesDescriptor(EntitiesOrEntityDescriptor):
 
     ## In the standard blah
     name = attribute.Attribute("Name")
+    
+## \todo: implement signatures
 
     descriptors = EntitiesOrEntityDescriptor(
         meta__min_occurs=1, meta__max_occurs=None)
@@ -130,6 +132,13 @@ class IndexedEndpointType(EndPointType):
         required=True)
 
     is_default = attribute.Attribute("isDefault")
+
+
+class Organization(Element):
+    extension = element.Element(name = "Extensions")
+    organization_name = element.Element(name = "OrganizationName", meta__min_occurs = 1, meta__max_occurs = None)
+    organization_display_name = element.Element(name = "OrganizationDisplayName", meta__min_occurs = 1, meta__max_occurs = None)
+    organization_url = element.Element(name = "OrganizationURL", meta__min_occurs = 1, meta__max_occurs = None)
 
 class RequestedAttribute(Element):
     is_required = attribute.Attribute("isRequred")

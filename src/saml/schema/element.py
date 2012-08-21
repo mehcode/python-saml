@@ -219,7 +219,6 @@ class Element(object):
                     # Yes; deserialize and set it
                     obj.__dict__[name] = member.deserialize(value)
 
-
         # Get simple content
         if xml.text and xml.text.strip():
             obj.text = xml.text.strip()

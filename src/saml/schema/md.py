@@ -31,14 +31,16 @@ from datetime import datetime
 from .. import VERSION
 from . import attribute, element
 
+
 class Element(element.Element):
     class Meta(element.Element.Meta):
         namespace = ("md", "urn:oasis:names:tc:SAML:2.0:metadata")
 
-"""Element classes are being arranged in alphabetical order"""
+# """Element classes are being arranged in alphabetical order"""
 
 # class AttributeConsumingService(Element):
 # C    index = attribute.Attr
+
 
 class EndPointType(Element):
     binding = attribute.Attribute(
@@ -51,6 +53,7 @@ class EndPointType(Element):
 
     response_location = attribute.Attribute(
         name="ResponseLocation")
+
 
 class EntitiesDescriptor(Element):
     id = attribute.Attribute(
@@ -97,6 +100,7 @@ class EntityDescriptor(Element):
     name = attribute.Attribute("Name")
 
     descriptors = RoleDescriptor(meta__min_occurs=1, meta__max_occurs=None)
+
 
 class IndexedEndpointType(EndPointType):
     index = attribute.Attribute(

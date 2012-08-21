@@ -43,10 +43,10 @@ class AttributeConsumingService(Element):
 class EndPointType(Element):
     binding = attribute.Attribute(
         name = "Binding",
-        required = "true")
+        required = True)
     location = attribute.Attribute(
         name = "Location",
-        required = true)
+        required = True)
     responselocation = attribute.Attribute(
         name = "ResponseLocation")
 
@@ -61,7 +61,7 @@ class EntitiesDescriptor(Element):
 class EntityDescriptor(Element):
     entityID = attribute.Attribute(
         name = "entityID",
-        required = true)
+        required = True)
     id = attribute.Attribute(
         name = "ID",
         default = lambda: '_{}'.format(uuid4(),hex))
@@ -72,7 +72,7 @@ class EntityDescriptor(Element):
 class IndexedEndpointType(EndPointType):
     index = attribute.Attribute(
         name = "index",
-        required = true)
+        required = True)
     isDefault = atttribute.Attribute("isDefault")
 
 class RoleDescriptor(RoleDescriptor):
@@ -83,5 +83,5 @@ class RoleDescriptor(RoleDescriptor):
     cacheDuration = attribute.Attribute("cacheDuration")
     protocolsSupportEnumeration = attribute.Attribute(
         name = "protocolsSupportEnumeration",
-        required = true)
+        required = True)
     errorURL = attribute.Attribute("errorURL")

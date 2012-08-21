@@ -59,8 +59,8 @@ class BooleanAttribute(Attribute):
 
     @staticmethod
     def deserialize(value):
-        """Returns a boolean from the passed xs:bool XML value."""
-        return True if value.tolower() == "true" else False
+        """Returns a boolean from the passedhttps xs:bool XML value."""
+        return True if value.lower() == "true" else False
 
     @staticmethod
     def serialize(value):

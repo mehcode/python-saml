@@ -55,7 +55,11 @@ class EndPointType(Element):
         name="ResponseLocation")
 
 
-class EntitiesDescriptor(Element):
+class EntitiesOrEntityDescriptor(Element):
+    pass
+
+
+class EntitiesDescriptor(EntitiesOrEntityDescriptor):
     id = attribute.Attribute(
         name="ID",
         default=lambda: '_{}'.format(uuid4(), hex))
@@ -66,6 +70,9 @@ class EntitiesDescriptor(Element):
 
     ## In the standard blah
     name = attribute.Attribute("Name")
+
+    descriptors = EntitiesOrEntityDescriptor(
+        meta__min_occurs=1, meta__max_occurs=None)
 
 
 class RoleDescriptor(Element):
@@ -84,7 +91,7 @@ class RoleDescriptor(Element):
     errorURL = attribute.Attribute("errorURL")
 
 
-class EntityDescriptor(Element):
+class EntityDescriptor(EntitiesOrEntityDescriptor):
     entityID = attribute.Attribute(
         name="entityID",
         required=True)

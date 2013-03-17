@@ -127,9 +127,9 @@ class Element(object):
 
         # Iterate through ordered members
         for unused, name, member in cls._get_ordered_members():
-            if isinstance(member, Element):
-                store_index = index
-                try:
+            store_index = index
+            try:
+                if isinstance(member, Element):
                     # Iterate N times; the -1 keeps the iteration
                     # until failure
                     iteration = 0
@@ -172,27 +172,27 @@ class Element(object):
                         # Increment counter
                         iteration += 1
                         index += 1
-                except IndexError:
-                    # Ran out of XML elements; might as well stop
-                    break
-                except:
-                    # Something went wrong; reset the iterator
-                    index = store_index
-            elif isinstance(member, Simple):
-                # Get element in question
-                element = elements[index]
+                elif isinstance(member, Simple):
+                    # Get element in question
+                    element = elements[index]
 
-                # Deserialize and store in the dict
-                obj.__dict__[name] = member.deserialize(member, element)
+                    # Deserialize and store in the dict
+                    obj.__dict__[name] = member.deserialize(member, element)
 
-                # Increment
-                index += 1
-            elif isinstance(member, attribute.Attribute):
-                # Does this exist in the XML ?
-                value = xml.get(member.name)
-                if value is not None:
-                    # Yes; deserialize and set it
-                    obj.__dict__[name] = member.deserialize(value)
+                    # Increment
+                    index += 1
+                elif isinstance(member, attribute.Attribute):
+                    # Does this exist in the XML ?
+                    value = xml.get(member.name)
+                    if value is not None:
+                        # Yes; deserialize and set it
+                        obj.__dict__[name] = member.deserialize(value)
+            except IndexError:
+                # Ran out of XML elements; might as well stop
+                break
+            except:
+                # Something went wrong; reset the iterator
+                index = store_index
 
         # Get simple content
         if xml.text and xml.text.strip():

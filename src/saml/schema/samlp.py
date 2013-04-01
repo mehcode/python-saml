@@ -243,7 +243,7 @@ class LogoutRequest(Message):
     reason = attribute.Attribute('Reason')
 
     ## The principal to terminate the session of.
-    id = saml.BaseIDAbstractType(meta__index=0)
+    principal = saml.BaseIDAbstractType()
 
     ## The identifier that indexes this session at the message recipient.
     session = element.Simple(

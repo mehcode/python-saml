@@ -73,10 +73,53 @@ def build_authn_request_simple():
     return target
 
 
+def build_artifact_resolve_simple():
+    # Create the artifact resolution request.
+    target = schema.ArtifactResolve()
+    target.id = '_cce4ee769ed970b501d680f697989d14'
+    target.issue_instant = datetime(2004, 12, 5, 9, 21, 58)
+    target.issuer = 'https://idp.example.org/SAML2'
+    target.artifact = '''
+        AAQAAMh48/1oXIM+sDo7Dh2qMp1HM4IF5DaRNmDj6RdUmllwn9jJHyEgIi8=
+    '''.strip()
+
+    # Return the built object.
+    return target
+
+
+def build_artifact_response_simple():
+    # Create the artifact response.
+    target = schema.ArtifactResponse()
+    target.id = '_d84a49e5958803dedcff4c984c2b0d95'
+    target.in_response_to = '_cce4ee769ed970b501d680f697989d14'
+    target.issue_instant = datetime(2004, 12, 5, 9, 21, 59)
+    target.status.code.value = schema.StatusCode.SUCCESS
+
+    # Create an authentication request to stuff inside of the artifact
+    # response.
+    target.message = message = schema.AuthenticationRequest()
+    message.id = '_306f8ec5b618f361c70b6ffb1480eade'
+    message.issue_instant = datetime(2004, 12, 5, 9, 21, 59)
+    message.destination = 'https://idp.example.org/SAML2/SSO/Artifact'
+    message.protocol = schema.Protocol.ARTIFACT
+    message.issuer = 'https://sp.example.com/SAML2'
+    message.assertion_consumer_service_url = (
+        'https://sp.example.com/SAML2/SSO/Artifact')
+
+    # Add a name id policy to the authentication request.
+    message.policy = policy = schema.NameIDPolicy()
+    policy.allow_create = False
+    policy.format = schema.NameID.Format.EMAIL
+
+    # Return the built object.
+    return target
+
+
 @mark.parametrize('name', [
-        'assertion',
-        'authn-request',
-    ])
+    'assertion',
+    'authn-request',
+    'artifact-resolve',
+    'artifact-response'])
 def test_simple_serialize(name):
     # Load the expected result.
     filename = path.join(BASE_DIR, 'expected', '%s-simple.xml' % name)

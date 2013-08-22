@@ -28,31 +28,31 @@ class NameID(Base):
 
     class Format:
         #! URI prefix for the values in this enumeration.
-        _PREFIX = "urn:oasis:names:tc:SAML:2.0:nameid-format:"
+        _PREFIX = "urn:oasis:names:tc:SAML:"
 
         #! The interpretation is left to individual implementations.
-        UNSPECIFIED = "{}unspecified".format(_PREFIX)
+        UNSPECIFIED = '%s1.1:nameid-format:unspecified' % _PREFIX
 
         #! Indicates a form of an email address.
-        EMAIL = "{}emailAddress".format(_PREFIX)
+        EMAIL = '%s1.1:nameid-format:emailAddress' % _PREFIX
 
         #! Is in the form specified by the X.509 recommendation [XMLSig].
-        X509 = "{}X509SubjectName".format(_PREFIX)
+        X509 = '%s1.1:nameid-format:X509SubjectName' % _PREFIX
 
         #! Is in the format of a Windows domain qualified name.
-        WINDOWS = "{}WindowsDomainQualifiedName".format(_PREFIX)
+        WINDOWS = '%s1.1:nameid-format:WindowsDomainQualifiedName' % _PREFIX
 
         #! Is in the form of a Kerberos principal name.
-        KEREBOS = "{}kerberos".format(_PREFIX)
+        KEREBOS = '%s2.0:nameid-format:kerberos' % _PREFIX
 
         #! Is the identifier of an entity that provides SAML-based services.
-        ENTITY = "{}entity".format(_PREFIX)
+        ENTITY = '%s2.0:nameid-format:entity' % _PREFIX
 
         #! Is a persistent opaque identifier for a principal.
-        PERSISTENT = "{}persistent".format(_PREFIX)
+        PERSISTENT = '%s2.0:nameid-format:persistent' % _PREFIX
 
         #! Is an identifier with transient semantics.
-        TRANSIENT = "{}transient".format(_PREFIX)
+        TRANSIENT = '%s2.0:nameid-format:transient' % _PREFIX
 
     #! A URI classification of string-based identifier information.
     format = Attribute(types.String)

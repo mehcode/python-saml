@@ -11,7 +11,6 @@ __all__ = [
 ]
 
 
-
 def deserialize(xml):
     from .base import _element_registry
 

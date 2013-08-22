@@ -32,6 +32,9 @@ class Boolean(Base):
         return 'true' if value else 'false'
 
     def clean(self, text):
+        if not text:
+            return None
+
         return text == 'true'
 
 

@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from lxml import etree
-from .utils import pascalize
+from .utils import pascalize, classproperty
 
 
 class Options:
@@ -21,6 +21,10 @@ class Options:
         self.namespace = meta.get('namespace')
         if not self.namespace:
             raise ValueError('A namespace must be specified.')
+
+
+# Element registry in order to lookup for deserialize.
+_element_registry = {}
 
 
 class Declarative(type):
@@ -105,7 +109,13 @@ class Declarative(type):
                 attrs['_items'][attr._name] = attr
 
         # Continue initialization.
-        return super().__new__(cls, name, bases, attrs)
+        obj = super().__new__(cls, name, bases, attrs)
+
+        # Add this element to the element registry.
+        _element_registry[obj.name] = obj
+
+        # Return the constructed element class.
+        return obj
 
 
 class Component:
@@ -167,6 +177,9 @@ class Element(Component):
         # Return the value.
         return value
 
+    def deserialize(self, xml):
+        return self.type.deserialize(xml)
+
     def __get__(self, instance, owner=None):
         if instance is not None:
             # Being accessed as an instance; use the instance state.
@@ -226,6 +239,11 @@ class Attribute(Component):
         # Return the value.
         return value
 
+    def clean(self, text):
+        # Wipe off the passed text and squish it into a python object
+        # if needed.
+        return self.type.clean(text)
+
     def __get__(self, instance, owner=None):
         if instance is not None:
             # Being accessed as an instance; use the instance state.
@@ -256,10 +274,10 @@ class Base(metaclass=Declarative):
         #! Update the instance state with kwargs.
         self._state.update(kwargs)
 
-    @property
-    def name(self):
+    @classproperty
+    def name(cls):
         # Return the namespaced name of the element.
-        return '{%s}%s' % (self.meta.namespace[1], self.meta.name)
+        return '{%s}%s' % (cls.meta.namespace[1], cls.meta.name)
 
     def prepare(self):
         """Prepare the date in the instance state for serialization.
@@ -339,43 +357,58 @@ class Base(metaclass=Declarative):
         # Serialize the root and return the serialized element.
         return self._serialize_item(self)
 
-    # def serialize(self, obj=None):
-        # # Serialize the data in the instance state to the representation
-        # # specified.
-        # data = collections.OrderedDict()
+    @classmethod
+    def deserialize(cls, xml):
+        # Instantiate an instance of ourself.
+        instance = cls()
 
-        # # Iterate through the non-last declared attributes.
-        # for name, attr in self._attributes.items():
-        #     if attr._last:
-        #         # Don't add this yet.
-        #         continue
+        # Set the text element if present.
+        if xml.text:
+            instance.text = xml.text
 
-        #     value = attr.serialize(self)
-        #     if value is not None:
-        #         data[name] = value
+        # Iterate through the items and deserialize them on the instance.
+        elements = iter(xml.getchildren())
+        element = None
+        for item in cls._items.values():
+            if isinstance(item, Attribute):
+                # Attempt to get the attribute from the
+                # xml element.
+                value = xml.attrib.get(item.name)
 
-        # # Iterate through the last declared attributes.
-        # for name, attr in self._attributes.items():
-        #     if attr._last:
-        #         value = attr.serialize(self)
-        #         if value is not None:
-        #             data[name] = value
+                # Clean the value using the item clean.
+                value = item.clean(value)
 
-        # # Return the data dictionary.
-        # return data
+                # Set it on the instance.
+                item.__set__(instance, value)
 
-    # @classmethod
-    # def deserialize(cls, data, instance=None):
-    #     # Instantiate an instance if one is not provided.
-    #     if instance is None:
-    #         instance = cls()
+            elif isinstance(item, Element):
+                if element is None:
+                    try:
+                        # Get the next element in the chain.
+                        element = next(elements)
 
-    #     # Iterate through the attributes to rebuild the instance state.
-    #     for name, attr in instance._attributes.items():
-    #         value = text.get(name)
-    #         value = attr.deserialize(value)
-    #         if value:
-    #             instance._state[name] = value
+                    except StopIteration:
+                        break
 
-    #     # Return the reconstructed instance.
-    #     return instance
+                # Resolve the element into a schema object.
+                obj = _element_registry.get(element.tag)
+                if item is None:
+                    # Element is unknown; bail.
+                    raise ValueError('Unknown element', element.tag)
+
+                # Is this element a subclass of the current item?
+                if not issubclass(obj, item.type):
+                    # Nope; skip to the next item.
+                    continue
+
+                # Deserialize the element.
+                value = obj.deserialize(element)
+
+                # Set it on the instance.
+                item.__set__(instance, value)
+
+                # Unset the current element reference.
+                element = None
+
+        # Return the deserialized instance.
+        return instance

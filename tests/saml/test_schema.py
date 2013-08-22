@@ -1,4 +1,5 @@
 from saml import schema
+from saml.schema import utils
 from datetime import datetime
 from lxml import etree
 from os import path
@@ -55,7 +56,7 @@ def build_assertion_simple():
     return target
 
 
-def build_authn_request_simple():
+def build_authentication_request_simple():
     # Create the authentication request.
     target = schema.AuthenticationRequest()
     target.id = 'aaf23196-1773-2113-474a-fe114412ab72'
@@ -191,17 +192,21 @@ def build_logout_response_simple():
     return target
 
 
-@mark.parametrize('name', [
+NAMES = [
     'assertion',
-    'authn-request',
+    'authentication-request',
     'response',
     'logout-request',
     'logout-response',
     'artifact-resolve',
-    'artifact-response'])
+    'artifact-response'
+]
+
+
+@mark.parametrize('name', NAMES)
 def test_simple_serialize(name):
     # Load the expected result.
-    filename = path.join(BASE_DIR, 'expected', '%s-simple.xml' % name)
+    filename = path.join(BASE_DIR, '%s-simple.xml' % name)
     parser = etree.XMLParser(
         ns_clean=True, remove_blank_text=True, remove_comments=True)
     expected = etree.parse(filename, parser).getroot()
@@ -214,4 +219,24 @@ def test_simple_serialize(name):
     result = target.serialize()
 
     # Resolve and compare the result against the expected.
+    assert_node(expected, result)
+
+
+@mark.parametrize('name', NAMES)
+def test_simple_deserialize(name):
+    # Load the result.
+    filename = path.join(BASE_DIR, '%s-simple.xml' % name)
+    parser = etree.XMLParser(
+        ns_clean=True, remove_blank_text=True, remove_comments=True)
+    target = etree.parse(filename, parser).getroot()
+
+    # Build the expected result.
+    build_fn_name = ('build-%s-simple' % name).replace('-', '_')
+    expected = globals()[build_fn_name]().serialize()
+
+    # Deserialize and subsequently serialize the target.
+    cls_name = utils.pascalize(name)
+    result = getattr(schema, cls_name).deserialize(target).serialize()
+
+    # Compare the nodes.
     assert_node(expected, result)

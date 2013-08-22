@@ -1,6 +1,6 @@
 import base64
 import zlib
-from urllib.parse import quote, urlencode, parse_qs
+from urllib.parse import quote, urlencode, parse_qs, unquote_plus
 from lxml import etree
 from saml import schema
 from saml.schema.base import _element_registry
@@ -68,7 +68,8 @@ def receive(method, query_string, body):
 
         # Get the relay state if present.
         relay_state = query.get('RelayState')
-        relay_state = relay_state[0] if relay_state else None
+        if relay_state:
+            relay_state = unquote_plus(relay_state[0])
 
         # Return the message and the relay state.
         return message, relay_state

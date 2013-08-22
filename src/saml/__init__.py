@@ -14,7 +14,11 @@ VERSION = __version__
 #! Version of the SAML standard supported.
 from .schema import VERSION as SAML_VERSION
 
+from .signature import sign, verify
+
 __all__ = [
     'VERSION',
-    'SAML_VERSION'
+    'SAML_VERSION',
+    'sign',
+    'verify'
 ]

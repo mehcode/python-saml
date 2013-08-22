@@ -1,3 +1,4 @@
+import saml
 from saml import schema
 from saml.schema import utils
 from datetime import datetime
@@ -8,11 +9,21 @@ from pytest import mark
 BASE_DIR = path.abspath(path.dirname(__file__))
 
 
+def strip(text):
+    if not text:
+        return None
+
+    text = text.replace('\n', '')
+    text = text.strip()
+
+    return text if text else None
+
+
 def assert_node(expected, result):
     assert expected.tag == result.tag
     assert expected.attrib == result.attrib
-    assert expected.text == result.text
-    assert expected.tail == result.tail
+    assert strip(expected.text) == strip(result.text)
+    assert strip(expected.tail) == strip(result.tail)
     assert len(expected) == len(result)
 
     for expected, result in zip(expected, result):
@@ -35,6 +46,10 @@ def build_assertion_simple():
     data.in_response_to = 'aaf23196-1773-2113-474a-fe114412ab72'
     data.not_on_or_after = datetime(2004, 12, 5, 9, 27, 5)
     data.recipient = 'https://sp.example.com/SAML2/SSO/POST'
+    del data.recipient
+    data.recipient = 'https://sp.example.com/SAML2/SSO/POST'
+
+    assert data.recipient == 'https://sp.example.com/SAML2/SSO/POST'
 
     # Create an authentication statement.
     statement = schema.AuthenticationStatement()
@@ -240,3 +255,48 @@ def test_simple_deserialize(name):
 
     # Compare the nodes.
     assert_node(expected, result)
+
+
+NAMES = [
+    'assertion',
+    'response',
+    'logout-response',
+    'artifact-resolve',
+    'artifact-response'
+]
+
+
+@mark.parametrize('name', NAMES)
+def test_sign(name):
+    # Load the expected result.
+    filename = path.join(BASE_DIR, '%s-signed.xml' % name)
+    expected = etree.parse(filename).getroot()
+
+    # Build the result.
+    build_fn_name = ('build-%s-simple' % name).replace('-', '_')
+    target = globals()[build_fn_name]()
+
+    # Serialize the result into an XML object.
+    # Round-trips the XML to remove weird spacing.
+    result = target.serialize()
+
+    with open(path.join(BASE_DIR, 'rsakey.pem'), 'r') as stream:
+        # Sign the result.
+        saml.sign(result, stream)
+
+    # print()
+    # print(etree.tostring(result).decode('utf8'))
+    # print()
+
+    # Compare the nodes.
+    assert_node(expected, result)
+
+@mark.parametrize('name', NAMES)
+def test_verify(name):
+    # Load the SAML XML document to verify.
+    filename = path.join(BASE_DIR, '%s-signed.xml' % name)
+    expected = etree.parse(filename).getroot()
+
+    # Sign the result.
+    with open(path.join(BASE_DIR, 'rsapub.pem'), 'r') as stream:
+        assert saml.verify(expected, stream)

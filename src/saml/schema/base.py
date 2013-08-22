@@ -19,9 +19,9 @@ class Options:
 
         #! The namespace of the element.
         self.namespace = meta.get('namespace')
-        if not self.namespace:
-            raise ValueError('A namespace must be specified.')
 
+        #! Index into the elements of where we stick the signature block.
+        self.signature_index = meta.get('signature_index', 1)
 
 # Element registry in order to lookup for deserialize.
 _element_registry = {}
@@ -45,15 +45,7 @@ class Declarative(type):
 
     @classmethod
     def _is_derived(cls, name, bases):
-        if name == 'NewBase':
-            # This is a six contrivance; not a real class.
-            return False
-
         for base in bases:
-            if base.__name__ == 'NewBase':
-                # This is a six contrivance; move along.
-                continue
-
             if isinstance(base, cls):
                 # This is some sort of derived resource; good.
                 return True
@@ -143,8 +135,8 @@ class Component:
                 del instance._state[self._name]
                 return
 
-        # Continue along with normal behavior.
-        super().__delete__(instance)
+        # Prevent deletion.
+        raise TypeError("attribute can't be deleted")
 
 
 class Element(Component):
@@ -208,8 +200,8 @@ class Element(Component):
             instance._state[self._name] = value
             return
 
-        # Continue along with normal behavior.
-        super().__set__(instance, value)
+        # Prevent assignment.
+        raise TypeError("attribute can't be assigned")
 
 
 class Attribute(Component):
@@ -258,8 +250,8 @@ class Attribute(Component):
             instance._state[self._name] = value
             return
 
-        # Continue along with normal behavior.
-        super().__set__(instance, value)
+        # Prevent assignment.
+        raise TypeError("attribute can't be assigned")
 
 
 class Base(metaclass=Declarative):
@@ -273,6 +265,9 @@ class Base(metaclass=Declarative):
 
         #! Update the instance state with kwargs.
         self._state.update(kwargs)
+
+        #! The signature function tuple.
+        self._sign_args = None
 
     @classproperty
     def name(cls):
@@ -306,7 +301,7 @@ class Base(metaclass=Declarative):
         # Return the collected attributes and elements
         return attributes, elements, nsmap
 
-    def _serialize_item(self, item, parent=None):
+    def _serialize_item(self, item):
         # Destructure the data.
         attributes, elements, nsmap = item.prepare()
 
@@ -324,10 +319,6 @@ class Base(metaclass=Declarative):
         # Iterate and serialize all elements.
         for element in elements:
             self._serialize_element(element, node)
-
-        if parent is not None:
-            # Append the element to the parent.
-            parent.append(node)
 
         # Return the node.
         return node

@@ -1,0 +1,19 @@
+<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0" ID="identifier_2" IssueInstant="2004-12-05T09:22:05" Destination="https://sp.example.com/SAML2/SLO/POST" InResponseTo="identifier_1"><saml:Issuer>https://idp.example.org/SAML2</saml:Issuer><Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+<SignedInfo>
+<CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+<SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+<Reference>
+<Transforms>
+<Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+</Transforms>
+<DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<DigestValue>RhuApGcuiOYg2PVIbhtk+5056I0=</DigestValue>
+</Reference>
+</SignedInfo>
+<SignatureValue>fvrMF0Vxdkas3gUaQkovo5S8F3MP7rrMAhajI8D5JJnfEYbO5CV4XXgTQTXxikyL
+SJpPvaaY3hkrifpO+NI9xbWYaf0rQCerUS0+IUvHCc55HwqbtfY5eltWmDtZAx+U
+kc7/hYMgDRBjQdRz9psi5M3eZSdb65pe/xh77JbF96O/YIfYF4fZA5jHYI1rR98S
+oodOde6WnBEY/M/TalEam7fmpX2HM8nZ9gzucPdeSPvuZFY457H2NB5FsmLZcs3C
+2/jZy3kocNQGK6lLrv0VXYDpCT/qMQyUJVGKsiLQWUzV+/7VyIKUKkiauYMcfTi0
+AAS0sycvezravWT9KgzXCA==</SignatureValue>
+</Signature><samlp:Status><samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></samlp:Status></samlp:LogoutResponse>

@@ -291,6 +291,7 @@ def test_sign(name):
     # Compare the nodes.
     assert_node(expected, result)
 
+
 @mark.parametrize('name', NAMES)
 def test_verify(name):
     # Load the SAML XML document to verify.

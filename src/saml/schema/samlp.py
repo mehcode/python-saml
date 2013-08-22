@@ -221,7 +221,7 @@ class Status(Base):
     code = Element(StatusCode, required=True)
 
 
-class Response(_Message):
+class StatusResponse(_Message):
     """Extends the common message type with a status element.
     """
 
@@ -231,6 +231,17 @@ class Response(_Message):
 
     #! A code representing the status of the corresponding request.
     status = Element(Status)
+
+
+class Response(StatusResponse):
+    """
+    Used when a response consists of a list of zero or more assertions
+    that satisfy the request.
+    """
+
+    #! Specifies an assertion by value, or optionally an encrypted assertion
+    #! by value.
+    assertions = Element(saml.Assertion, collection=True)
 
 
 class Artifact(Base):
@@ -252,7 +263,7 @@ class ArtifactResolve(_Message):
     artifact = Element(Artifact, required=True)
 
 
-class ArtifactResponse(Response):
+class ArtifactResponse(StatusResponse):
     """
     Responds to an <ArtifactResolve> request with an embedded message
     that was referenced by the given artifact.

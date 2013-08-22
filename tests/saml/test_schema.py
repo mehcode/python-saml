@@ -115,9 +115,56 @@ def build_artifact_response_simple():
     return target
 
 
+def build_response_simple():
+    # Create the response.
+    target = schema.Response()
+    target.id = 'identifier_2'
+    target.in_response_to = 'identifier_1'
+    target.issue_instant = datetime(2004, 12, 5, 9, 22, 5)
+    target.issuer = 'https://idp.example.org/SAML2'
+    target.destination = 'https://sp.example.com/SAML2/SSO/POST'
+    target.status.code.value = schema.StatusCode.SUCCESS
+
+    # Create an assertion for the response.
+    target.assertions = assertion = schema.Assertion()
+    assertion.id = 'identifier_3'
+    assertion.issue_instant = datetime(2004, 12, 5, 9, 22, 5)
+    assertion.issuer = 'https://idp.example.org/SAML2'
+
+    # Create a subject.
+    assertion.subject = subject = schema.Subject()
+    subject.id = schema.NameID('3f7b3dcf-1674-4ecd-92c8-1544f346baf8')
+    subject.id.format = schema.NameID.Format.TRANSIENT
+    subject.confirmation = confirmation = schema.SubjectConfirmation()
+    confirmation.data = data = schema.SubjectConfirmationData()
+    data.in_response_to = 'identifier_1'
+    data.not_on_or_after = datetime(2004, 12, 5, 9, 27, 5)
+    data.recipient = 'https://sp.example.com/SAML2/SSO/POST'
+
+    # Create an authentication statement.
+    statement = schema.AuthenticationStatement()
+    assertion.statements.append(statement)
+    statement.authn_instant = datetime(2004, 12, 5, 9, 22, 0)
+    statement.session_index = 'identifier_3'
+    ref = schema.AuthenticationContextReference.PASSWORD_PROTECTED_TRANSPORT
+    statement.context.reference = ref
+
+    # Create a authentication condition.
+    assertion.conditions = conditions = schema.Conditions()
+    conditions.not_before = datetime(2004, 12, 5, 9, 17, 5)
+    conditions.not_on_or_after = datetime(2004, 12, 5, 9, 27, 5)
+    condition = schema.AudienceRestriction()
+    condition.audiences = 'https://sp.example.com/SAML2'
+    conditions.condition = condition
+
+    # Return the built object.
+    return target
+
+
 @mark.parametrize('name', [
     'assertion',
     'authn-request',
+    'response',
     'artifact-resolve',
     'artifact-response'])
 def test_simple_serialize(name):

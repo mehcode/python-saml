@@ -1,0 +1,381 @@
+from collections import OrderedDict
+from lxml import etree
+from .utils import pascalize
+
+
+class Options:
+
+    def __init__(self, meta, name, data, bases):
+        """
+        Initializes the options object and defaults configuration not
+        specified.
+        """
+
+        #! Name of the element in its serialized form.
+        self.name = meta.get('name')
+        if self.name is None:
+            # Generate a name if none is provided.
+            self.name = pascalize(name)
+
+        #! The namespace of the element.
+        self.namespace = meta.get('namespace')
+        if not self.namespace:
+            raise ValueError('A namespace must be specified.')
+
+
+class Declarative(type):
+
+    @classmethod
+    def __prepare__(cls, name, bases):
+        return OrderedDict()
+
+    @classmethod
+    def _gather_metadata(cls, metadata, bases):
+        for base in bases:
+            if isinstance(base, cls) and hasattr(base, 'Meta'):
+                # Append metadata.
+                metadata.append(getattr(base, 'Meta'))
+
+                # Recurse.
+                cls._gather_metadata(metadata, base.__bases__)
+
+    @classmethod
+    def _is_derived(cls, name, bases):
+        if name == 'NewBase':
+            # This is a six contrivance; not a real class.
+            return False
+
+        for base in bases:
+            if base.__name__ == 'NewBase':
+                # This is a six contrivance; move along.
+                continue
+
+            if isinstance(base, cls):
+                # This is some sort of derived resource; good.
+                return True
+
+        # This is not derived at all from Resource (eg. is base).
+        return False
+
+    def __new__(cls, name, bases, attrs):
+        # Only continue if we are dervied from declarative.
+        if not cls._is_derived(name, bases):
+            return super().__new__(cls, name, bases, attrs)
+
+        # Gather the attributes of all options classes.
+        # Start with the base configuration.
+        metadata = {}
+        values = lambda x: {n: getattr(x, n) for n in dir(x)}
+
+        # Expand the options class with the gathered metadata.
+        base_meta = []
+        cls._gather_metadata(base_meta, bases)
+
+        # Apply the configuration from each class in the chain.
+        for meta in base_meta:
+            metadata.update(**values(meta))
+
+        # Apply the configuration from the current class.
+        cur_meta = {}
+        if attrs.get('Meta'):
+            cur_meta = values(attrs['Meta'])
+            metadata.update(**cur_meta)
+
+        # Gather and construct the options object.
+        meta = attrs['meta'] = Options(metadata, name, cur_meta, base_meta)
+
+        # Collect declared attributes.
+        attrs['_items'] = OrderedDict()
+
+        # Collect attributes from base classes.
+        for base in bases:
+            values = getattr(base, '_items', None)
+            if values:
+                attrs['_items'].update(values)
+
+        # Collect attributes from current class.
+        for key, attr in attrs.items():
+            klass = type(attr)
+            if issubclass(klass, Element) or issubclass(klass, Attribute):
+                # If name reference is null; default to camel-cased name.
+                if attr._name is None:
+                    attr._name = pascalize(key)
+
+                # Store attribute in dictionary.
+                attrs['_items'][attr._name] = attr
+
+        # Continue initialization.
+        return super().__new__(cls, name, bases, attrs)
+
+
+class Component:
+
+    def __init__(self, type_, name=None, required=False, default=None):
+        #! Name of the attribute in its serialized form.
+        self._name = name
+
+        #! Underlying type of the attribute.
+        self.type = type_
+
+        #! Whether the attribute is required or not.
+        self.required = required
+
+        #! The default value for this attribute.
+        self.default = default
+        if not callable(default):
+            # Normalize self.default to always be a callable.
+            self.default = lambda: default
+
+    def __delete__(self, instance):
+        if instance is not None:
+            # Being accessed as an instance; use the instance state.
+            if self._name in instance._state:
+                del instance._state[self._name]
+                return
+
+        # Continue along with normal behavior.
+        super().__delete__(instance)
+
+
+class Element(Component):
+
+    def __init__(self, type_, **kwargs):
+        #! If an element is a collection it is a list of elements.
+        self.collection = kwargs.pop('collection', False)
+
+        # Continue the initialization the base element.
+        super().__init__(type_, **kwargs)
+
+    @property
+    def name(self):
+        # Return the namespaced name of the element.
+        return '{%s}%s' % (self.type.meta.namespace[1], self._name)
+
+    @property
+    def namespace(self):
+        # Return the namespace of the underlying type.
+        return self.type.meta.namespace
+
+    def prepare(self, instance):
+        # Retrieve the value of this attribute from the instance.
+        value = instance._state.get(self._name)
+        if value is None and self.default:
+            # No value; use the default callable.
+            self.__set__(instance, self.default())
+            value = instance._state.get(self._name)
+
+        # Return the value.
+        return value
+
+    def __get__(self, instance, owner=None):
+        if instance is not None:
+            # Being accessed as an instance; use the instance state.
+            value = instance._state.get(self._name)
+            if value is None and self.collection:
+                # No value and we need to be a collection of things.
+                instance._state[self._name] = value = []
+
+            if value is None:
+                # Build a default one of ourself.
+                instance._state[self._name] = value = self.type()
+
+            # Return the value.
+            return value
+
+        # Return ourself.
+        return self
+
+    def __set__(self, instance, value):
+        if instance is not None:
+            if isinstance(value, str):
+                # Value is just text; construct the type.
+                value = self.type(value)
+
+            # Being accessed as an instance; use the instance state.
+            instance._state[self._name] = value
+            return
+
+        # Continue along with normal behavior.
+        super().__set__(instance, value)
+
+
+class Attribute(Component):
+
+    def __init__(self, type_, name=None, required=False, default=None):
+        # Initialize the base element first.
+        super().__init__(type_, name=name, required=required, default=default)
+
+        # Instantiate the type reference with no parameters.
+        if isinstance(self.type, type):
+            self.type = self.type()
+
+    @property
+    def name(self):
+        return self._name
+
+    def prepare(self, instance):
+        # Retrieve the value of this attribute from the instance.
+        value = instance._state.get(self.name)
+        if value is None and self.default:
+            # No value; use the default callable.
+            value = self.default()
+
+        # Run the value through the underyling type's preparation method.
+        value = self.type.prepare(value)
+
+        # Return the value.
+        return value
+
+    def __get__(self, instance, owner=None):
+        if instance is not None:
+            # Being accessed as an instance; use the instance state.
+            return instance._state.get(self._name)
+
+        # Return ourself.
+        return self
+
+    def __set__(self, instance, value):
+        if instance is not None:
+            # Being accessed as an instance; use the instance state.
+            instance._state[self._name] = value
+            return
+
+        # Continue along with normal behavior.
+        super().__set__(instance, value)
+
+
+class Base(metaclass=Declarative):
+
+    def __init__(self, text=None, **kwargs):
+        #! Instance state of the attribute.
+        self._state = {}
+
+        #! Text of the element.
+        self.text = text
+
+        #! Update the instance state with kwargs.
+        self._state.update(kwargs)
+
+    @property
+    def name(self):
+        # Return the namespaced name of the element.
+        return '{%s}%s' % (self.meta.namespace[1], self.meta.name)
+
+    def prepare(self):
+        """Prepare the date in the instance state for serialization.
+        """
+
+        # Create a collection for the attributes and elements of
+        # this instance.
+        attributes, elements = OrderedDict(), []
+
+        # Initialize the namespace map.
+        nsmap = dict([self.meta.namespace])
+
+        # Iterate through all declared items.
+        for name, item in self._items.items():
+            if isinstance(item, Attribute):
+                # Prepare the item as an attribute.
+                attributes[name] = item.prepare(self)
+
+            elif isinstance(item, Element):
+                # Update the nsmap.
+                nsmap.update([item.namespace])
+
+                # Prepare the item as an element.
+                elements.append(item)
+
+        # Return the collected attributes and elements
+        return attributes, elements, nsmap
+
+    def _serialize_item(self, item, parent=None):
+        # Destructure the data.
+        attributes, elements, nsmap = item.prepare()
+
+        # Create the XML node.
+        node = etree.Element(item.name, nsmap=nsmap)
+
+        # Add the attributes.
+        for name, value in attributes.items():
+            if value is not None:
+                node.attrib[name] = value
+
+        # Set its text.
+        node.text = item.text
+
+        # Iterate and serialize all elements.
+        for element in elements:
+            self._serialize_element(element, node)
+
+        if parent is not None:
+            # Append the element to the parent.
+            parent.append(node)
+
+        # Return the node.
+        return node
+
+    def _serialize_element(self, element, parent=None):
+        # Prepare the instance state for serialization.
+        items = element.prepare(self)
+        if not items:
+            # No data to serialize; move along.
+            return
+
+        try:
+            # Serialize the item(s).
+            for item in items:
+                parent.append(item.serialize())
+
+        except TypeError:
+            # Serialize the single item.
+            parent.append(items.serialize())
+
+    def serialize(self):
+        """
+        Serializes the data in the instance state as an
+        XML representation.
+        """
+
+        # Serialize the root and return the serialized element.
+        return self._serialize_item(self)
+
+    # def serialize(self, obj=None):
+        # # Serialize the data in the instance state to the representation
+        # # specified.
+        # data = collections.OrderedDict()
+
+        # # Iterate through the non-last declared attributes.
+        # for name, attr in self._attributes.items():
+        #     if attr._last:
+        #         # Don't add this yet.
+        #         continue
+
+        #     value = attr.serialize(self)
+        #     if value is not None:
+        #         data[name] = value
+
+        # # Iterate through the last declared attributes.
+        # for name, attr in self._attributes.items():
+        #     if attr._last:
+        #         value = attr.serialize(self)
+        #         if value is not None:
+        #             data[name] = value
+
+        # # Return the data dictionary.
+        # return data
+
+    # @classmethod
+    # def deserialize(cls, data, instance=None):
+    #     # Instantiate an instance if one is not provided.
+    #     if instance is None:
+    #         instance = cls()
+
+    #     # Iterate through the attributes to rebuild the instance state.
+    #     for name, attr in instance._attributes.items():
+    #         value = text.get(name)
+    #         value = attr.deserialize(value)
+    #         if value:
+    #             instance._state[name] = value
+
+    #     # Return the reconstructed instance.
+    #     return instance

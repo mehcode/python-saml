@@ -348,6 +348,9 @@ class Base(metaclass=Declarative):
         # Serialize the root and return the serialized element.
         return self._serialize_item(self)
 
+    def tostring(self):
+        return etree.tostring(self.serialize())
+
     @classmethod
     def deserialize(cls, xml):
         # Instantiate an instance of ourself.
@@ -403,3 +406,7 @@ class Base(metaclass=Declarative):
 
         # Return the deserialized instance.
         return instance
+
+    @classmethod
+    def fromstring(cls, text):
+        return cls.deserialized(etree.XML(text))

@@ -15,10 +15,12 @@ VERSION = __version__
 from .schema import VERSION as SAML_VERSION
 
 from .signature import sign, verify
+from . import client
 
 __all__ = [
     'VERSION',
     'SAML_VERSION',
     'sign',
-    'verify'
+    'verify',
+    'client'
 ]

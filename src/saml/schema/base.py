@@ -363,7 +363,13 @@ class Base(metaclass=Declarative):
         # Iterate through the items and deserialize them on the instance.
         elements = iter(xml.getchildren())
         element = None
-        for item in cls._items.values():
+        index = 0
+        items = list(cls._items.values())
+        while index < len(items):
+            # Fetch the next item.
+            item = items[index]
+            index += 1
+
             if isinstance(item, Attribute):
                 # Attempt to get the attribute from the
                 # xml element.
@@ -386,9 +392,11 @@ class Base(metaclass=Declarative):
 
                 # Resolve the element into a schema object.
                 obj = _element_registry.get(element.tag)
-                if item is None:
+                if obj is None:
                     # Element is unknown; bail.
-                    raise ValueError('Unknown element', element.tag)
+                    element = None
+                    index -= 1
+                    continue
 
                 # Is this element a subclass of the current item?
                 if not issubclass(obj, item.type):

@@ -64,15 +64,7 @@ def receive(method, query_string, body):
         text = zlib.decompress(base64.b64decode(encoded[0]), -15)
 
         # Parse the text into xml.
-        xml = etree.XML(text)
-
-        # Resolve the xml into an element.
-        element = _element_registry.get(xml.tag)
-        if not element:
-            return None
-
-        # Deserialize the xml.
-        message = element.deserialize(xml)
+        message = etree.XML(text)
 
         # Get the relay state if present.
         relay_state = query.get('RelayState')

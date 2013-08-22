@@ -257,13 +257,35 @@ def test_simple_deserialize(name):
     assert_node(expected, result)
 
 
-NAMES = [
-    'assertion',
-    'response',
-    'logout-response',
-    'artifact-resolve',
-    'artifact-response'
-]
+@mark.parametrize('name', NAMES)
+def test_signed_deserialize(name):
+    # Load the result.
+    filename = path.join(BASE_DIR, '%s-signed.xml' % name)
+    parser = etree.XMLParser(
+        ns_clean=True, remove_blank_text=True, remove_comments=True)
+    target = etree.parse(filename, parser).getroot()
+
+    # Build the expected result.
+    build_fn_name = ('build-%s-simple' % name).replace('-', '_')
+    expected = globals()[build_fn_name]().serialize()
+
+    # Deserialize and subsequently serialize the target.
+    cls_name = utils.pascalize(name)
+    result = getattr(schema, cls_name).deserialize(target).serialize()
+
+    # TODO: Remove the signature node.
+
+    # Compare the nodes.
+    assert_node(expected, result)
+
+
+# NAMES = [
+#     'assertion',
+#     'response',
+#     'logout-response',
+#     'artifact-resolve',
+#     'artifact-response'
+# ]
 
 
 @mark.parametrize('name', NAMES)

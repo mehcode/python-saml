@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<samlp:LogoutResponse
+        xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+        xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+        ID="identifier_2"
+        InResponseTo="identifier_1"
+        Version="2.0"
+        IssueInstant="2004-12-05T09:22:05"
+        Destination="https://sp.example.com/SAML2/SLO/POST">
+    <saml:Issuer>https://idp.example.org/SAML2</saml:Issuer>
+    <samlp:Status>
+        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+    </samlp:Status>
+</samlp:LogoutResponse>

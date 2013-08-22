@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<samlp:LogoutRequest
+        Destination="https://idphost/adfs/ls/"
+        ID="identifier_1"
+        IssueInstant="2008-06-03T12:59:57"
+        Version="2.0"
+        xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+        xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">
+    <saml:Issuer>myhost</saml:Issuer>
+    <saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+            NameQualifier="https://idphost/adfs/ls/">myemail@mydomain.com</saml:NameID>
+    <samlp:SessionIndex>_0628125f-7f95-42cc-ad8e-fde86ae90bbe</samlp:SessionIndex>
+</samlp:LogoutRequest>

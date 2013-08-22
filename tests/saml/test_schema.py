@@ -27,8 +27,8 @@ def build_assertion_simple():
 
     # Create a subject.
     target.subject = subject = schema.Subject()
-    subject.id = schema.NameID('3f7b3dcf-1674-4ecd-92c8-1544f346baf8')
-    subject.id.format = schema.NameID.Format.TRANSIENT
+    subject.principal = '3f7b3dcf-1674-4ecd-92c8-1544f346baf8'
+    subject.principal.format = schema.NameID.Format.TRANSIENT
     subject.confirmation = confirmation = schema.SubjectConfirmation()
     confirmation.data = data = schema.SubjectConfirmationData()
     data.in_response_to = 'aaf23196-1773-2113-474a-fe114412ab72'
@@ -133,8 +133,8 @@ def build_response_simple():
 
     # Create a subject.
     assertion.subject = subject = schema.Subject()
-    subject.id = schema.NameID('3f7b3dcf-1674-4ecd-92c8-1544f346baf8')
-    subject.id.format = schema.NameID.Format.TRANSIENT
+    subject.principal = '3f7b3dcf-1674-4ecd-92c8-1544f346baf8'
+    subject.principal.format = schema.NameID.Format.TRANSIENT
     subject.confirmation = confirmation = schema.SubjectConfirmation()
     confirmation.data = data = schema.SubjectConfirmationData()
     data.in_response_to = 'identifier_1'
@@ -161,10 +161,42 @@ def build_response_simple():
     return target
 
 
+def build_logout_request_simple():
+    # Create the request.
+    target = schema.LogoutRequest()
+    target.id = 'identifier_1'
+    target.issue_instant = datetime(2008, 6, 3, 12, 59, 57)
+    target.issuer = 'myhost'
+    target.destination = 'https://idphost/adfs/ls/'
+    target.principal = 'myemail@mydomain.com'
+    target.principal.format = schema.NameID.Format.EMAIL
+    target.principal.name_qualifier = 'https://idphost/adfs/ls/'
+    target.session_index = '_0628125f-7f95-42cc-ad8e-fde86ae90bbe'
+
+    # Return the built object.
+    return target
+
+
+def build_logout_response_simple():
+    # Create the response.
+    target = schema.LogoutResponse()
+    target.id = 'identifier_2'
+    target.in_response_to = 'identifier_1'
+    target.issue_instant = datetime(2004, 12, 5, 9, 22, 5)
+    target.issuer = 'https://idp.example.org/SAML2'
+    target.destination = 'https://sp.example.com/SAML2/SLO/POST'
+    target.status.code.value = schema.StatusCode.SUCCESS
+
+    # Return the built object.
+    return target
+
+
 @mark.parametrize('name', [
     'assertion',
     'authn-request',
     'response',
+    'logout-request',
+    'logout-response',
     'artifact-resolve',
     'artifact-response'])
 def test_simple_serialize(name):

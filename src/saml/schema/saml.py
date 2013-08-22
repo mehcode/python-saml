@@ -20,7 +20,7 @@ class BaseID(Base):
     sp_name_qualifier = Attribute(types.String, name="SPNameQualifier")
 
 
-class NameID(Base):
+class NameID(BaseID):
     """
     Is the identifier used in various SAML assertion
     constructs [saml-core § 2.2.3].
@@ -314,7 +314,7 @@ class SubjectConfirmation(Base):
     method = Attribute(types.String, required=True, default=Method.BEARER)
 
     #! Identifies the entity expected to satisfy the enclosed requirements.
-    id = Element(NameID)
+    principal = Element(NameID)
 
     #! Confirmation information and constraints.
     data = Element(SubjectConfirmationData)
@@ -325,7 +325,7 @@ class Subject(Base):
     """
 
     #! Identifies the subject.
-    id = Element(NameID)
+    principal = Element(NameID)
 
     #! Information that allows the subject to be confirmed. If more than one
     #! subject confirmation is provided, then satisfying any one of them is

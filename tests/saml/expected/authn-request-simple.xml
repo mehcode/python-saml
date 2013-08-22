@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <samlp:AuthnRequest
     xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
     xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"

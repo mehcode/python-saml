@@ -271,3 +271,39 @@ class ArtifactResponse(StatusResponse):
 
     #! The embedded message.
     message = Element(_Message)
+
+
+class SessionIndex(Base):
+    """The identifier that indexes a session at the message recipient.
+    """
+
+
+class LogoutRequest(_Message):
+    """
+    A session participant or session authority sends a <LogoutRequest>
+    message to indicate that a session has been terminated.
+    """
+
+    #! The time at which the request expires, after which the recipient
+    #! may discard the message.
+    not_on_or_after = Attribute(types.DateTime)
+
+    #! An indication of the reason for the logout, in the
+    #! form of a URI reference.
+    reason = Attribute(types.String)
+
+    #! The identifier and associated attributes
+    #! (in plaintext or encrypted form) that specify the principal as
+    #! currently recognized by the identity and service providers prior
+    #! to this request.
+    principal = Element(saml.NameID, required=True)
+
+    #! The identifier that indexes this session at the message recipient.
+    session_index = Element(SessionIndex)
+
+
+class LogoutResponse(StatusResponse):
+    """
+    The message returned to the client when all sessions have been
+    terminated by a <LogoutRequest>.
+    """

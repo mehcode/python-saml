@@ -12,8 +12,27 @@ class Base:
 
 
 class String(Base):
-    """String Values [saml-core § 1.3.1].
+    """String values [saml-core § 1.3.1].
     """
+
+
+class Integer(Base):
+    """Integral values.
+    """
+
+
+class Boolean(Base):
+    """Boolean values.
+    """
+
+    def prepare(self, value):
+        if value is None:
+            return None
+
+        return 'true' if value else 'false'
+
+    def clean(self, text):
+        return text == 'true'
 
 
 class DateTime(Base):

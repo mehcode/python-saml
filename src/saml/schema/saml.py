@@ -394,7 +394,7 @@ class Assertion(_Message):
     #! processing in certain situations but which MAY be ignored by
     #! applications that do not understand the advice or do not wish to
     #! make use of it.
-    # advice = Element(Advice)
+    # TODO: <Advice/>
 
     #! Statements that are being asserted about the included subject.
     statements = Element(Statement, collection=True)

@@ -1,4 +1,8 @@
 # python-saml
+[![Build Status](https://travis-ci.org/concordusapps/python-saml.png?branch=master)](https://travis-ci.org/concordusapps/python-saml)
+[![Coverage Status](https://coveralls.io/repos/concordusapps/python-saml/badge.png?branch=master)](https://coveralls.io/r/concordusapps/python-saml?branch=master)
+[![PyPi Version](https://pypip.in/v/saml/badge.png)](https://pypi.python.org/pypi/saml)
+![PyPi Downloads](https://pypip.in/d/saml/badge.png)
 > A python interface to produce and consume Security Asserion Markup Language v2.0 (SAML2) messages.
 
 ## Features

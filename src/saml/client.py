@@ -27,7 +27,7 @@ def send(uri, message, relay_state=None, protocol='redirect'):
         # Build the parameters.
         parameters = {name: text}
         if relay_state:
-            parameters['RelayState'] = quote(relay_state)
+            parameters['RelayState'] = relay_state
 
         # Append the parameters on the uri and return.
         uri = '%s?%s' % (uri, urlencode(parameters))

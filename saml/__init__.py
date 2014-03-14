@@ -6,9 +6,8 @@ Language (SAML) v2.0 messages.
 @par References
     - https://www.oasis-open.org/standards#samlv2.0
 """
-
 #! Version of the library.
-from .meta import version as __version__
+from ._version import __version__, __version_info__  # noqa
 VERSION = __version__
 
 #! Version of the SAML standard supported.

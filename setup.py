@@ -1,18 +1,11 @@
 #! /usr/bin/env python
 from setuptools import setup, find_packages
-from pkgutil import get_importer
+from imp import load_source
 from os import path
-
-# Calculate the base directory of the project.
-BASE_DIR = path.abspath(path.dirname(__file__))
-
-# Navigate, import, and retrieve the version of the project.
-_imp = get_importer(path.join(BASE_DIR, 'src', 'saml'))
-meta = _imp.find_module('meta').load_module()
 
 setup(
     name='saml',
-    version=meta.version,
+    version=load_source('', 'saml/_version.py').__version__,
     description='A python interface to produce and consume Security '
                 'Assertion Markup Language (SAML) v2.0 messages.',
     classifiers=[
@@ -26,8 +19,7 @@ setup(
     author='Concordus Applications',
     author_email='support@concordusapps.com',
     url='http://github.com/concordusapps/python-saml',
-    package_dir={'saml': 'src/saml'},
-    packages=find_packages(path.join(BASE_DIR, 'src')),
+    packages=find_packages('.'),
     install_requires=(
         # Extensions to the standard Python datetime module.
         # Provides ability to easily parse ISO 8601 formatted dates.

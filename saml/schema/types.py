@@ -44,9 +44,18 @@ class DateTime(Base):
     date-time [saml-core § 1.3.3].
     """
 
+    @staticmethod
+    def to_iso8601(when):
+        text = when.strftime("%Y-%m-%dT%H:%M:%SZ")
+        return text
+
+    @staticmethod
+    def from_iso8601(when):
+        return parse_datetime(when)
+
     def prepare(self, value):
-        return value.isoformat() if value is not None else None
+        return DateTime.to_iso8601(value) if value is not None else None
 
     def clean(self, text):
         if text is not None:
-            return parse_datetime(text, fuzzy=False)
+            return DateTime.from_iso8601(text)

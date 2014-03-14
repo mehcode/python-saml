@@ -1,4 +1,4 @@
-<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0" ID="identifier_1" IssueInstant="2008-06-03T12:59:57" Destination="https://idphost/adfs/ls/"><saml:Issuer>myhost</saml:Issuer><Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+<samlp:LogoutRequest xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Version="2.0" ID="identifier_1" IssueInstant="2008-06-03T12:59:57Z" Destination="https://idphost/adfs/ls/"><saml:Issuer>myhost</saml:Issuer><Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
 <SignedInfo>
 <CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
 <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
@@ -7,13 +7,13 @@
 <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
 </Transforms>
 <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<DigestValue>eljDTcm6WH5q12ZfGRFLx75/LpA=</DigestValue>
+<DigestValue>cdDEc7e5AgOZIOTAVr5uq/KCneY=</DigestValue>
 </Reference>
 </SignedInfo>
-<SignatureValue>SwvooyDG2N+KRT7t6XhZE02z7alYeK0S01zi7N220QVJg6MyCxVYXXJ+IPAUw5aM
-N2w7rKFd5QOs0AyXMw8ENMZs8IzY4qeJl9VOWzFh40KVnykk+yzqtABtuDdk49pg
-kCHvNO9mvRsceFA4c6MgvXLCCNRE423ufpMafjaBgFjRJCw8y80m774ydda6uSsw
-9t5ngywHS5Fb4Uzr02H1od/LC1tQGbC17vP0p5wH7cTr3W4sdyVMCk3rrtQTJoY/
-2vuY80DR1gIQvoS6W7nYigqENtgH1sCptflCRwlcrmQXyTeD1kr6AwKd6VMpfxSn
-pppmXeHK/qH3IoN2bAc/pQ==</SignatureValue>
+<SignatureValue>d2qTJAJk8bLpq7dpRy4Ne8RLQwlb8g1Wy71r4EiyDBOri9Kh6AHv3mDrMLwCiFx7
+jcoYZtLWhQRglA5Icl8Z3WnPZDR/7EyRyVLyEnMFwLF2ZuXCBWlAhIJsJX+BBOd8
+5IKXOMw3QLFshGWwj/npCYpHckDTU9uvOi0Q3Flg4lgXNUFZ94iUD0W0uqxFZmm5
+oMJQALvIoi0fsFrXxQ2RTFUFP6TdW4h0KkVHZWSjzN14KGJxpCoh0zxngQ0O7EfV
+YIHgBCOPv+Z5IFTOUsdkR4sruOT/fw0FX4cAlFtjt7FSw8e0t/TuzucOU/lTIeqF
+yk7Yxka80ncjHmeJlPq7jg==</SignatureValue>
 </Signature><saml:NameID NameQualifier="https://idphost/adfs/ls/" Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress">myemail@mydomain.com</saml:NameID><samlp:SessionIndex>_0628125f-7f95-42cc-ad8e-fde86ae90bbe</samlp:SessionIndex></samlp:LogoutRequest>

@@ -4,7 +4,7 @@
     xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
     ID="aaf23196-1773-2113-474a-fe114412ab72"
     Version="2.0"
-    IssueInstant="2004-12-05T09:21:59"
+    IssueInstant="2004-12-05T09:21:59Z"
     AssertionConsumerServiceIndex="0"
     AttributeConsumingServiceIndex="0">
 <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>

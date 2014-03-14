@@ -2,7 +2,7 @@
 <samlp:LogoutRequest
         Destination="https://idphost/adfs/ls/"
         ID="identifier_1"
-        IssueInstant="2008-06-03T12:59:57"
+        IssueInstant="2008-06-03T12:59:57Z"
         Version="2.0"
         xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
         xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">

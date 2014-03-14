@@ -5,7 +5,7 @@
         ID="identifier_2"
         InResponseTo="identifier_1"
         Version="2.0"
-        IssueInstant="2004-12-05T09:22:05"
+        IssueInstant="2004-12-05T09:22:05Z"
         Destination="https://sp.example.com/SAML2/SLO/POST">
     <saml:Issuer>https://idp.example.org/SAML2</saml:Issuer>
     <samlp:Status>

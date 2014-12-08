@@ -7,6 +7,10 @@
 
 ## Features
 
+##### Python 2.7.x, 3.3.x, 3.4.x support
+
+python-saml supports both python 2.7.x+ and 3.3.x+.
+
 ##### SAML conformance
 
 python-saml conforms to the latest [SAML][] (v2.0) standards.

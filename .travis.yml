@@ -2,6 +2,7 @@ language: python
 python:
   - '2.7'
   - '3.3'
+  - '3.4'
 
 before_install:
   - 'travis_retry sudo apt-get install python-dev libxml2-dev libxmlsec1-dev'

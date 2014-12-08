@@ -197,7 +197,15 @@ class Element(Component):
                 value = self.type(value)
 
             # Being accessed as an instance; use the instance state.
-            instance._state[self._name] = value
+            if self.collection:
+                if self._name not in instance._state:
+                    instance._state[self._name] = []
+
+                instance._state[self._name].append(value)
+
+            else:
+                instance._state[self._name] = value
+
             return
 
         # Prevent assignment.
@@ -365,6 +373,7 @@ class Base(metaclass=Declarative):
         element = None
         index = 0
         items = list(cls._items.values())
+        # print(items)
         while index < len(items):
             # Fetch the next item.
             item = items[index]
@@ -408,6 +417,10 @@ class Base(metaclass=Declarative):
 
                 # Set it on the instance.
                 item.__set__(instance, value)
+
+                # Are we dealing with a "collection" ?
+                if item.collection:
+                    index -= 1
 
                 # Unset the current element reference.
                 element = None

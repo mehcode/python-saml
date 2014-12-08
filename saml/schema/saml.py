@@ -1,6 +1,7 @@
 from uuid import uuid4
 from datetime import datetime
-from . import types, base, VERSION, Attribute, Element
+from . import types, base, VERSION
+Element = base.Element
 
 
 class Base(base.Base):
@@ -14,10 +15,10 @@ class BaseID(Base):
     """
 
     #! The security or administrative domain that qualifies the name.
-    name_qualifier = Attribute(types.String)
+    name_qualifier = base.Attribute(types.String)
 
     #! Further qualifies a name with the name of a service provider.
-    sp_name_qualifier = Attribute(types.String, name="SPNameQualifier")
+    sp_name_qualifier = base.Attribute(types.String, name="SPNameQualifier")
 
 
 class NameID(BaseID):
@@ -55,10 +56,10 @@ class NameID(BaseID):
         TRANSIENT = '%s2.0:nameid-format:transient' % _PREFIX
 
     #! A URI classification of string-based identifier information.
-    format = Attribute(types.String)
+    format = base.Attribute(types.String)
 
     #! A name identifier established by a service provider.
-    sp_provided_id = Attribute(types.String, name="SPProvidedID")
+    sp_provided_id = base.Attribute(types.String, name="SPProvidedID")
 
 
 class Issuer(NameID):
@@ -68,7 +69,7 @@ class Issuer(NameID):
     """
 
     #! If no Format value is provided, then the value ENTITY is in effect.
-    format = Attribute(types.String)
+    format = base.Attribute(types.String)
 
 
 class _Message(Base):
@@ -76,14 +77,14 @@ class _Message(Base):
     """
 
     #! The version of this message.
-    version = Attribute(types.String, default=VERSION, required=True)
+    version = base.Attribute(types.String, default=VERSION, required=True)
 
     #! The identifier for this message.
-    id = Attribute(types.String, name='ID', required=True,
+    id = base.Attribute(types.String, name='ID', required=True,
                    default=lambda: '_%s' % uuid4().hex)
 
     #! The time instant of issue in UTC.
-    issue_instant = Attribute(types.DateTime, required=True,
+    issue_instant = base.Attribute(types.DateTime, required=True,
                               default=datetime.utcnow)
 
     #! The SAML authority that is making the claim(s) in the message.
@@ -230,6 +231,24 @@ class AuthenticationContext(Base):
     # TODO: <AuthenticatingAuthority>
 
 
+class AttributeValue(Base):
+    pass
+
+
+class Attribute(Base):
+
+    name_ = base.Attribute(types.String, name="Name")
+
+    name_format = base.Attribute(types.String)
+
+    value = Element(AttributeValue)
+
+
+class AttributeStatement(Statement):
+
+    attributes = Element(Attribute, collection=True)
+
+
 class SubjectLocality(Base):
     """
     Specifies the DNS domain name and IP address for the system from
@@ -247,17 +266,17 @@ class AuthenticationStatement(Statement):
         name = 'AuthnStatement'
 
     #! Specifies the time at which the authentication took place.
-    authn_instant = Attribute(types.DateTime, required=True,
+    authn_instant = base.Attribute(types.DateTime, required=True,
                               default=datetime.utcnow)
 
     #! Specifies the index of a particular session between the principal
     #! identified by the subject and the authenticating authority.
-    session_index = Attribute(types.String)
+    session_index = base.Attribute(types.String)
 
     #! Specifies a time instant at which the session between the principal
     #! identified by the subject and the SAML authority issuing this
     #! statement MUST be considered ended.
-    session_not_on_or_after = Attribute(types.DateTime)
+    session_not_on_or_after = base.Attribute(types.DateTime)
 
     #! Specifies the DNS domain name and IP address for the system from which
     #! the assertion subject was apparently authenticated.
@@ -277,19 +296,19 @@ class SubjectConfirmationData(Base):
     # TODO: Arbitrary elements
 
     #! A time instant before which the subject cannot be confirmed.
-    not_before = Attribute(types.DateTime)
+    not_before = base.Attribute(types.DateTime)
 
     #! A time instant at which the subject can no longer be confirmed.
-    not_on_or_after = Attribute(types.DateTime)
+    not_on_or_after = base.Attribute(types.DateTime)
 
     #! URI specifying to which an attesting entity can present the assertion.
-    recipient = Attribute(types.String)
+    recipient = base.Attribute(types.String)
 
     #! ID of a SAML message to the entity can present the assertion to.
-    in_response_to = Attribute(types.String)
+    in_response_to = base.Attribute(types.String)
 
     #! The network address to which the saml entity can present the assertion.
-    address = Attribute(types.String)
+    address = base.Attribute(types.String)
 
 
 class SubjectConfirmation(Base):
@@ -311,7 +330,7 @@ class SubjectConfirmation(Base):
         HOLDER_OF_KEY = '{}holder-of-key'.format(_PREFIX)
 
     #! URI reference that identifies a protocol to confirm the subject.
-    method = Attribute(types.String, required=True, default=Method.BEARER)
+    method = base.Attribute(types.String, required=True, default=Method.BEARER)
 
     #! Identifies the entity expected to satisfy the enclosed requirements.
     principal = Element(NameID)
@@ -346,10 +365,10 @@ class Conditions(Base):
     """
 
     #! A time instant before which the subject cannot be confirmed.
-    not_before = Attribute(types.DateTime)
+    not_before = base.Attribute(types.DateTime)
 
     #! A time instant at which the subject can no longer be confirmed.
-    not_on_or_after = Attribute(types.DateTime)
+    not_on_or_after = base.Attribute(types.DateTime)
 
     #! Specifies that the assertion is addressed to a particular audience.
     condition = Element(Condition, collection=True)

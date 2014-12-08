@@ -19,7 +19,9 @@ python-saml may be used to produce and consume SAML messages regardless of the e
 
 ## Usage
 
-Check the [test suite](https://github.com/concordusapps/python-saml/blob/master/tests/saml/test_schema.py#L33) for examples on using the library. Curently the library is strictly schema generation and consumption.
+### 
+
+Check the [test suite](https://github.com/concordusapps/python-saml/blob/master/tests/saml/test_schema.py#L33) for additional examples on using the library.
 
 ## Install
 

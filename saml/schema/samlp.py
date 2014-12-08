@@ -1,4 +1,4 @@
-from . import types, base, Attribute, Element, saml
+from . import types, base, Element, saml
 
 
 class Base(base.Base):
@@ -13,11 +13,11 @@ class _Message(saml._Message, Base):
 
     #! A URI reference indicating the address to which this request has
     #! been sent.
-    destination = Attribute(types.String)
+    destination = base.Attribute(types.String)
 
     #! Indicates whether or not (and under what conditions) consent has
     #! been obtained from a principal in the sending of this request.
-    consent = Attribute(types.String)
+    consent = base.Attribute(types.String)
 
 
 class NameIDPolicy(Base):
@@ -28,18 +28,18 @@ class NameIDPolicy(Base):
 
     #! Specifies the URI reference corresponding to a name identifier format
     #! defined in this or another specification.
-    format = Attribute(types.String)
+    format = base.Attribute(types.String)
 
     #! Optionally specifies that the assertion subject's identifier be
     #! returned (or created) in the namespace of a service provider
     #! other than the requester, or in the namespace of an affiliation
     #! group of service providers
-    sp_name_qualifier = Attribute(types.String, name='SPNameQualifier')
+    sp_name_qualifier = base.Attribute(types.String, name='SPNameQualifier')
 
     #! A Boolean value used to indicate whether the identity provider is
     #! allowed, in the course of fulfilling the request, to create a
     #! new identifier to represent the principal.
-    allow_create = Attribute(types.Boolean)
+    allow_create = base.Attribute(types.Boolean)
 
 
 class RequestedAuthenticationContext(Base):
@@ -50,7 +50,7 @@ class RequestedAuthenticationContext(Base):
     #! Specifies the comparison method used to evaluate the requested
     #! context classes or statements, one of "exact", "minimum",
     #! "maximum", or "better". The default is "exact".
-    comparison = Attribute(types.String)
+    comparison = base.Attribute(types.String)
 
     #! Specifies one or more URI references identifying authentication
     #! context classes or declarations.
@@ -85,34 +85,34 @@ class AuthenticationRequest(_Message):
 
     #! A Boolean value. If "true", the identity provider MUST authenticate
     #! the presenter directly rather than rely on a previous security context.
-    force_authn = Attribute(types.Boolean)
+    force_authn = base.Attribute(types.Boolean)
 
     #! A Boolean value. If "true", the identity provider and the user agent
     #! itself MUST NOT visibly take control of the user interface from the
     #! requester and interact with the presenter in a noticeable fashion.
-    is_passive = Attribute(types.Boolean)
+    is_passive = base.Attribute(types.Boolean)
 
     #! A URI reference that identifies a SAML protocol binding to be used when
     #! returning the <Response> message.
-    protocol = Attribute(types.String, name='ProtocolBinding')
+    protocol = base.Attribute(types.String, name='ProtocolBinding')
 
     #! Indirectly identifies the location to which the <Response> message
     #! should be returned to the requester.
-    assertion_consumer_service_index = Attribute(types.Integer)
+    assertion_consumer_service_index = base.Attribute(types.Integer)
 
     #! Specifies by value the location to which the <Response> message MUST
     #! be returned to the requester.
-    assertion_consumer_service_url = Attribute(
+    assertion_consumer_service_url = base.Attribute(
         types.String, name='AssertionConsumerServiceURL')
 
     #! Indirectly identifies information associated with the requester
     #! describing the SAML attributes the requester desires or requires to be
     #! supplied by the identity provider in the <Response> message.
-    attribute_consuming_service_index = Attribute(types.Integer)
+    attribute_consuming_service_index = base.Attribute(types.Integer)
 
     #! Specifies the human-readable name of the requester for use by the
     #! presenter's user agent or the identity provider.
-    provider_name = Attribute(types.String)
+    provider_name = base.Attribute(types.String)
 
     #! Specifies the requested subject of the resulting assertion(s).
     subject = Element(saml.Subject)
@@ -197,7 +197,7 @@ class StatusCode(Base):
     #! The response message would contain more elements than able.
     TOO_MANY_RESPONSES = "{}TooManyResponses".format(_PREFIX)
 
-    #! Attribute from an unknown attribute profile.
+    #! base.Attribute from an unknown attribute profile.
     UNKNOWN_ATTR_PROFILE = "{}UnknownAttrProfile".format(_PREFIX)
 
     #! The responder does not recognize the principal.
@@ -207,7 +207,7 @@ class StatusCode(Base):
     UNSUPPORTED_BINDING = "{}UnsupportedBinding".format(_PREFIX)
 
     #! The status code value. This attribute contains a URI reference.
-    value = Attribute(types.String)
+    value = base.Attribute(types.String)
 
     #! A subordinate status code that provides more specific information
     #! on an error condition.
@@ -227,7 +227,7 @@ class StatusResponse(_Message):
 
     #! A reference to the identifier of the request to which the
     #! response corresponds, if any.
-    in_response_to = Attribute(types.String)
+    in_response_to = base.Attribute(types.String)
 
     #! A code representing the status of the corresponding request.
     status = Element(Status)
@@ -286,11 +286,11 @@ class LogoutRequest(_Message):
 
     #! The time at which the request expires, after which the recipient
     #! may discard the message.
-    not_on_or_after = Attribute(types.DateTime)
+    not_on_or_after = base.Attribute(types.DateTime)
 
     #! An indication of the reason for the logout, in the
     #! form of a URI reference.
-    reason = Attribute(types.String)
+    reason = base.Attribute(types.String)
 
     #! The identifier and associated attributes
     #! (in plaintext or encrypted form) that specify the principal as

@@ -1,4 +1,5 @@
-# /usr/bin/env python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 from imp import load_source
 from os import path
@@ -14,6 +15,8 @@ setup(
         'Intended Audience :: System Administrators',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.3'
     ],
     author='Concordus Applications',

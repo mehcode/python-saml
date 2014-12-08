@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
 from collections import OrderedDict
 from lxml import etree
+import six
 from .utils import pascalize, classproperty
 
 
-class Options:
+class Options(object):
 
     def __init__(self, meta, name, data, bases):
         """
@@ -56,7 +58,8 @@ class Declarative(type):
     def __new__(cls, name, bases, attrs):
         # Only continue if we are dervied from declarative.
         if not cls._is_derived(name, bases):
-            return super().__new__(cls, name, bases, attrs)
+            return super(Declarative, cls).__new__(
+                cls, name, bases, attrs)
 
         # Gather the attributes of all options classes.
         # Start with the base configuration.
@@ -90,18 +93,19 @@ class Declarative(type):
                 attrs['_items'].update(values)
 
         # Collect attributes from current class.
-        for key, attr in attrs.items():
-            klass = type(attr)
-            if issubclass(klass, Element) or issubclass(klass, Attribute):
-                # If name reference is null; default to camel-cased name.
-                if attr._name is None:
-                    attr._name = pascalize(key)
+        test = lambda x: issubclass(type(x[1]), Component)
+        attrs_l = list(filter(test, attrs.items()))
+        attrs_l.sort(key=lambda x: x[1].creation_counter)
+        for key, attr in attrs_l:
+            # If name reference is null; default to camel-cased name.
+            if attr._name is None:
+                attr._name = pascalize(key)
 
-                # Store attribute in dictionary.
-                attrs['_items'][attr._name] = attr
+            # Store attribute in dictionary.
+            attrs['_items'][attr._name] = attr
 
         # Continue initialization.
-        obj = super().__new__(cls, name, bases, attrs)
+        obj = super(Declarative, cls).__new__(cls, name, bases, attrs)
 
         # Add this element to the element registry.
         _element_registry[obj.name] = obj
@@ -110,7 +114,11 @@ class Declarative(type):
         return obj
 
 
-class Component:
+class Component(object):
+
+    # Tracks each time this field is created; used to keep fields
+    # in order
+    creation_counter = 0
 
     def __init__(self, type_, name=None, required=False, default=None):
         # Name of the attribute in its serialized form.
@@ -127,6 +135,10 @@ class Component:
         if not callable(default):
             # Normalize self.default to always be a callable.
             self.default = lambda: default
+
+        # Adjust the creation counter, and save our local copy.
+        self.creation_counter = Component.creation_counter
+        Component.creation_counter += 1
 
     def __delete__(self, instance):
         if instance is not None:
@@ -146,7 +158,7 @@ class Element(Component):
         self.collection = kwargs.pop('collection', False)
 
         # Continue the initialization the base element.
-        super().__init__(type_, **kwargs)
+        super(Element, self).__init__(type_, **kwargs)
 
     @property
     def name(self):
@@ -216,7 +228,8 @@ class Attribute(Component):
 
     def __init__(self, type_, name=None, required=False, default=None):
         # Initialize the base element first.
-        super().__init__(type_, name=name, required=required, default=default)
+        super(Attribute, self).__init__(
+            type_, name=name, required=required, default=default)
 
         # Instantiate the type reference with no parameters.
         if isinstance(self.type, type):
@@ -262,7 +275,7 @@ class Attribute(Component):
         raise TypeError("attribute can't be assigned")
 
 
-class Base(metaclass=Declarative):
+class Base(six.with_metaclass(Declarative)):
 
     def __init__(self, text=None, **kwargs):
         # Instance state of the attribute.

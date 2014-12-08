@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Security Assertion Markup Language (SAML) v2.0
 
 A python interface to produce and consume Security Assertion Markup

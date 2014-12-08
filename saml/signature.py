@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 
 def sign(xml, stream, password=None):

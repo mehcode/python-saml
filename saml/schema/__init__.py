@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from .meta import version as VERSION
 from .saml import *
 from .samlp import *

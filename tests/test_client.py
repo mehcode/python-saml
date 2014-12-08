@@ -1,6 +1,6 @@
 from saml import client
 from test_schema import build_authentication_request_simple
-from urllib.parse import quote_plus
+from six.moves.urllib.parse import quote_plus
 
 
 def test_relay_state():

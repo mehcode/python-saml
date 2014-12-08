@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 from dateutil.parser import parse as parse_datetime
 
 
-class Base:
+class Base(object):
 
     def prepare(self, value):
         return str(value) if value is not None else None

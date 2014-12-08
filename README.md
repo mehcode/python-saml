@@ -1,6 +1,6 @@
 # python-saml
-[![Build Status](https://travis-ci.org/concordusapps/python-saml.png?branch=master)](https://travis-ci.org/concordusapps/python-saml)
-[![Coverage Status](https://coveralls.io/repos/concordusapps/python-saml/badge.png?branch=master)](https://coveralls.io/r/concordusapps/python-saml?branch=master)
+[![Build Status](https://travis-ci.org/mehcode/python-saml.png?branch=master)](https://travis-ci.org/mehcode/python-saml)
+[![Coverage Status](https://coveralls.io/repos/mehcode/python-saml/badge.png?branch=master)](https://coveralls.io/r/mehcode/python-saml?branch=master)
 [![PyPi Version](https://pypip.in/v/saml/badge.png)](https://pypi.python.org/pypi/saml)
 ![PyPi Downloads](https://pypip.in/d/saml/badge.png)
 > A python interface to produce and consume Security Asserion Markup Language v2.0 (SAML2) messages.
@@ -19,9 +19,9 @@ python-saml may be used to produce and consume SAML messages regardless of the e
 
 ## Usage
 
-### 
+###
 
-Check the [test suite](https://github.com/concordusapps/python-saml/blob/master/tests/saml/test_schema.py#L33) for additional examples on using the library.
+Check the [test suite](https://github.com/mehcode/python-saml/blob/master/tests/saml/test_schema.py#L33) for additional examples on using the library.
 
 ## Install
 
@@ -38,7 +38,7 @@ Check the [test suite](https://github.com/concordusapps/python-saml/blob/master/
 1. Clone the **saml** repository to your local computer.
 
    ```sh
-   git clone git://github.com/concordusapps/python-saml.git
+   git clone git://github.com/mehcode/python-saml.git
    ```
 
 2. Change into the **saml** root directory.

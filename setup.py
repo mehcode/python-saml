@@ -9,7 +9,7 @@ setup(
     description='A python interface to produce and consume Security '
                 'Assertion Markup Language (SAML) v2.0 messages.',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         'License :: OSI Approved :: MIT License',
@@ -17,8 +17,8 @@ setup(
         'Programming Language :: Python :: 3.3'
     ],
     author='Concordus Applications',
-    author_email='support@concordusapps.com',
-    url='http://github.com/concordusapps/python-saml',
+    author_email='leckey.ryan@gmail.com',
+    url='http://github.com/mehcode/python-saml',
     packages=find_packages('.'),
     install_requires=(
         # Extensions to the standard Python datetime module.

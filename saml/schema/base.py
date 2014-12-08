@@ -11,16 +11,16 @@ class Options:
         specified.
         """
 
-        #! Name of the element in its serialized form.
+        # Name of the element in its serialized form.
         self.name = meta.get('name')
         if self.name is None:
             # Generate a name if none is provided.
             self.name = pascalize(name)
 
-        #! The namespace of the element.
+        # The namespace of the element.
         self.namespace = meta.get('namespace')
 
-        #! Index into the elements of where we stick the signature block.
+        # Index into the elements of where we stick the signature block.
         self.signature_index = meta.get('signature_index', 1)
 
 # Element registry in order to lookup for deserialize.
@@ -113,16 +113,16 @@ class Declarative(type):
 class Component:
 
     def __init__(self, type_, name=None, required=False, default=None):
-        #! Name of the attribute in its serialized form.
+        # Name of the attribute in its serialized form.
         self._name = name
 
-        #! Underlying type of the attribute.
+        # Underlying type of the attribute.
         self.type = type_
 
-        #! Whether the attribute is required or not.
+        # Whether the attribute is required or not.
         self.required = required
 
-        #! The default value for this attribute.
+        # The default value for this attribute.
         self.default = default
         if not callable(default):
             # Normalize self.default to always be a callable.
@@ -142,7 +142,7 @@ class Component:
 class Element(Component):
 
     def __init__(self, type_, **kwargs):
-        #! If an element is a collection it is a list of elements.
+        # If an element is a collection it is a list of elements.
         self.collection = kwargs.pop('collection', False)
 
         # Continue the initialization the base element.
@@ -265,16 +265,16 @@ class Attribute(Component):
 class Base(metaclass=Declarative):
 
     def __init__(self, text=None, **kwargs):
-        #! Instance state of the attribute.
+        # Instance state of the attribute.
         self._state = {}
 
-        #! Text of the element.
+        # Text of the element.
         self.text = text
 
-        #! Update the instance state with kwargs.
+        # Update the instance state with kwargs.
         self._state.update(kwargs)
 
-        #! The signature function tuple.
+        # The signature function tuple.
         self._sign_args = None
 
     @classproperty

@@ -14,10 +14,10 @@ class BaseID(Base):
     """Provides an extension point for identifiers.
     """
 
-    #! The security or administrative domain that qualifies the name.
+    # The security or administrative domain that qualifies the name.
     name_qualifier = base.Attribute(types.String)
 
-    #! Further qualifies a name with the name of a service provider.
+    # Further qualifies a name with the name of a service provider.
     sp_name_qualifier = base.Attribute(types.String, name="SPNameQualifier")
 
 
@@ -28,37 +28,37 @@ class NameID(BaseID):
     """
 
     class Format:
-        #! URI prefix for the values in this enumeration.
+        # URI prefix for the values in this enumeration.
         _PREFIX = "urn:oasis:names:tc:SAML:"
 
-        #! The interpretation is left to individual implementations.
+        # The interpretation is left to individual implementations.
         UNSPECIFIED = '%s1.1:nameid-format:unspecified' % _PREFIX
 
-        #! Indicates a form of an email address.
+        # Indicates a form of an email address.
         EMAIL = '%s1.1:nameid-format:emailAddress' % _PREFIX
 
-        #! Is in the form specified by the X.509 recommendation [XMLSig].
+        # Is in the form specified by the X.509 recommendation [XMLSig].
         X509 = '%s1.1:nameid-format:X509SubjectName' % _PREFIX
 
-        #! Is in the format of a Windows domain qualified name.
+        # Is in the format of a Windows domain qualified name.
         WINDOWS = '%s1.1:nameid-format:WindowsDomainQualifiedName' % _PREFIX
 
-        #! Is in the form of a Kerberos principal name.
+        # Is in the form of a Kerberos principal name.
         KEREBOS = '%s2.0:nameid-format:kerberos' % _PREFIX
 
-        #! Is the identifier of an entity that provides SAML-based services.
+        # Is the identifier of an entity that provides SAML-based services.
         ENTITY = '%s2.0:nameid-format:entity' % _PREFIX
 
-        #! Is a persistent opaque identifier for a principal.
+        # Is a persistent opaque identifier for a principal.
         PERSISTENT = '%s2.0:nameid-format:persistent' % _PREFIX
 
-        #! Is an identifier with transient semantics.
+        # Is an identifier with transient semantics.
         TRANSIENT = '%s2.0:nameid-format:transient' % _PREFIX
 
-    #! A URI classification of string-based identifier information.
+    # A URI classification of string-based identifier information.
     format = base.Attribute(types.String)
 
-    #! A name identifier established by a service provider.
+    # A name identifier established by a service provider.
     sp_provided_id = base.Attribute(types.String, name="SPProvidedID")
 
 
@@ -68,7 +68,7 @@ class Issuer(NameID):
     message [saml-core § 2.2.5].
     """
 
-    #! If no Format value is provided, then the value ENTITY is in effect.
+    # If no Format value is provided, then the value ENTITY is in effect.
     format = base.Attribute(types.String)
 
 
@@ -76,18 +76,18 @@ class _Message(Base):
     """Contains common information found in most SAML/2.0 communications.
     """
 
-    #! The version of this message.
+    # The version of this message.
     version = base.Attribute(types.String, default=VERSION, required=True)
 
-    #! The identifier for this message.
+    # The identifier for this message.
     id = base.Attribute(types.String, name='ID', required=True,
                    default=lambda: '_%s' % uuid4().hex)
 
-    #! The time instant of issue in UTC.
+    # The time instant of issue in UTC.
     issue_instant = base.Attribute(types.DateTime, required=True,
                               default=datetime.utcnow)
 
-    #! The SAML authority that is making the claim(s) in the message.
+    # The SAML authority that is making the claim(s) in the message.
     issuer = Element(Issuer, required=True)
 
 
@@ -105,113 +105,113 @@ class AuthenticationContextReference(Statement):
     class Meta:
         name = 'AuthnContextClassRef'
 
-    #! URI prefix for the values in this enumeration.
+    # URI prefix for the values in this enumeration.
     _PREFIX = "urn:oasis:names:tc:SAML:2.0:ac:classes:"
 
-    #! Authenticated through the use of a provided IP address.
+    # Authenticated through the use of a provided IP address.
     INTERNET_PROTOCOL = "{}InternetProtocol".format(_PREFIX)
 
-    #! Authenticated through a provided IP address and username/password.
+    # Authenticated through a provided IP address and username/password.
     INTERNET_PROTOCOL_PASSWORD = "{}InternetProtocolPassword".format(
         _PREFIX)
 
-    #! Authenticated using a Kerberos ticket.
+    # Authenticated using a Kerberos ticket.
     KERBEROS = "{}Kerberos".format(_PREFIX)
 
-    #! Reflects no mobile customer registration procedures and an
-    #! authentication of the mobile device without requiring explicit
-    #! end-user interaction.
+    # Reflects no mobile customer registration procedures and an
+    # authentication of the mobile device without requiring explicit
+    # end-user interaction.
     MOBILE_ONE_FACTOR_UNREGISTERED = (
         "{}MobileOneFactorUnregistered".format(_PREFIX))
 
-    #! Reflects no mobile customer registration procedures and a
-    #! two-factor based authentication, such as secure device and user PIN.
+    # Reflects no mobile customer registration procedures and a
+    # two-factor based authentication, such as secure device and user PIN.
     MOBILE_TWO_FACTOR_UNREGISTERED = (
         "{}MobileTwoFactorUnregistered".format(_PREFIX))
 
-    #! Reflects mobile contract customer registration procedures and a
-    #! single factor authentication.
+    # Reflects mobile contract customer registration procedures and a
+    # single factor authentication.
     MOBILE_ONE_FACTOR_CONTRACT = "{}MobileOneFactorContract".format(
         _PREFIX)
 
-    #! Reflects mobile contract customer registration procedures and a
-    #! two-factor based authentication.
+    # Reflects mobile contract customer registration procedures and a
+    # two-factor based authentication.
     MOBILE_TWO_FACTOR_CONTRACT = "{}MobileTwoFactorContract".format(
         _PREFIX)
 
-    #! Authenticates through the presentation of a password over an
-    #! unprotected HTTP session.
+    # Authenticates through the presentation of a password over an
+    # unprotected HTTP session.
     PASSWORD = "{}Password".format(_PREFIX)
 
-    #! Authentication through the presentation of a password over a
-    #! protected session.
+    # Authentication through the presentation of a password over a
+    # protected session.
     PASSWORD_PROTECTED_TRANSPORT = "{}PasswordProtectedTransport".format(
         _PREFIX)
 
-    #! A principal had authenticated to an authentication authority at
-    #! some point in the past using any authentication context supported
-    #! by that authentication authority.
+    # A principal had authenticated to an authentication authority at
+    # some point in the past using any authentication context supported
+    # by that authentication authority.
     PREVIOUS_SESSION = "{}PreviousSession".format(_PREFIX)
 
-    #! The principal authenticated by means of a digital signature where
-    #! the key was validated as part of an X.509 Public Key Infrastructure.
+    # The principal authenticated by means of a digital signature where
+    # the key was validated as part of an X.509 Public Key Infrastructure.
     X509 = "{}X509".format(_PREFIX)
 
-    #! The principal authenticated by means of a digital signature where
-    #! key was validated as part of a PGP Public Key Infrastructure.
+    # The principal authenticated by means of a digital signature where
+    # key was validated as part of a PGP Public Key Infrastructure.
     PGP = "{}PGP".format(_PREFIX)
 
-    #! The principal authenticated by means of a digital signature where
-    #! the key was validated via an SPKI Infrastructure.
+    # The principal authenticated by means of a digital signature where
+    # the key was validated via an SPKI Infrastructure.
     SPKI = "{}SPKI".format(_PREFIX)
 
-    #! This context class indicates that the principal authenticated by
-    #! means of a digital signature according to the processing rules
-    #! specified in the XML Digital Signature specification [XMLSig].
+    # This context class indicates that the principal authenticated by
+    # means of a digital signature according to the processing rules
+    # specified in the XML Digital Signature specification [XMLSig].
     XMLDSIG = "{}XMLDSig".format(_PREFIX)
 
-    #! A principal authenticates to an authentication authority using a
-    #! smartcard.
+    # A principal authenticates to an authentication authority using a
+    # smartcard.
     SMARTCARD = "{}Smartcard".format(_PREFIX)
 
-    #! A principal authenticates to an authentication authority through
-    #! a two-factor authentication mechanism using a smartcard with
-    #! enclosed private key and a PIN.
+    # A principal authenticates to an authentication authority through
+    # a two-factor authentication mechanism using a smartcard with
+    # enclosed private key and a PIN.
     SMARTCARD_PKI = "{}SmartcardPKI".format(_PREFIX)
 
-    #! A principal uses an X.509 certificate stored in software to
-    #! authenticate to the authentication authority.
+    # A principal uses an X.509 certificate stored in software to
+    # authenticate to the authentication authority.
     SOFTWARE_PKI = "{}SoftwarePKI".format(_PREFIX)
 
-    #! The principal authenticated via the provision of a fixed-line
-    #! telephone number, transported via a telephony protocol such as ADSL.
+    # The principal authenticated via the provision of a fixed-line
+    # telephone number, transported via a telephony protocol such as ADSL.
     TELEPHONY = "{}Telephony".format(_PREFIX)
 
-    #! The principal is "roaming" (perhaps using a phone card) and
-    #! authenticates via the means of the line number, a user suffix,
-    #! and a password element.
+    # The principal is "roaming" (perhaps using a phone card) and
+    # authenticates via the means of the line number, a user suffix,
+    # and a password element.
     NOMAD_TELEPHONY = "{}NomadTelephony".format(_PREFIX)
 
-    #! The principal authenticated via the provision of a fixed-line
-    #! telephone number and a user suffix, transported via a telephony
-    #! protocol such as ADSL.
+    # The principal authenticated via the provision of a fixed-line
+    # telephone number and a user suffix, transported via a telephony
+    # protocol such as ADSL.
     PERSONAL_TELEPHONY = "{}PersonalTelephony".format(_PREFIX)
 
-    #! Authenticated via the means of the line number,
-    #! a user suffix, and a password element.
+    # Authenticated via the means of the line number,
+    # a user suffix, and a password element.
     AUTHENTICATED_TELEPHONY = "{}AuthenticatedTelephony".format(_PREFIX)
 
-    #! Authenticated by means of Secure Remote Password s[RFC 2945].
+    # Authenticated by means of Secure Remote Password s[RFC 2945].
     SECURE_REMOTE_PASSWORD = "{}SecureRemotePassword".format(_PREFIX)
 
-    #! The principal authenticated by means of a client certificate,
-    #! secured with the SSL/TLS transport.
+    # The principal authenticated by means of a client certificate,
+    # secured with the SSL/TLS transport.
     TLS_CLIENT = "{}TLSClient".format(_PREFIX)
 
-    #! A principal authenticates through a time synchronization token.
+    # A principal authenticates through a time synchronization token.
     TIME_SYNC_TOKEN = "{}TimeSyncToken".format(_PREFIX)
 
-    #! Indicates that the authentication means are unspecified.
+    # Indicates that the authentication means are unspecified.
     UNSPECIFIED = "{}Unspecified".format(_PREFIX)
 
 
@@ -222,8 +222,8 @@ class AuthenticationContext(Base):
     class Meta:
         name = 'AuthnContext'
 
-    #! A URI reference identifying an authentication context class that
-    #! describes the authentication context declaration that follows.
+    # A URI reference identifying an authentication context class that
+    # describes the authentication context declaration that follows.
     reference = Element(AuthenticationContextReference,
                         default=AuthenticationContextReference.UNSPECIFIED)
 
@@ -265,25 +265,25 @@ class AuthenticationStatement(Statement):
     class Meta:
         name = 'AuthnStatement'
 
-    #! Specifies the time at which the authentication took place.
+    # Specifies the time at which the authentication took place.
     authn_instant = base.Attribute(types.DateTime, required=True,
                               default=datetime.utcnow)
 
-    #! Specifies the index of a particular session between the principal
-    #! identified by the subject and the authenticating authority.
+    # Specifies the index of a particular session between the principal
+    # identified by the subject and the authenticating authority.
     session_index = base.Attribute(types.String)
 
-    #! Specifies a time instant at which the session between the principal
-    #! identified by the subject and the SAML authority issuing this
-    #! statement MUST be considered ended.
+    # Specifies a time instant at which the session between the principal
+    # identified by the subject and the SAML authority issuing this
+    # statement MUST be considered ended.
     session_not_on_or_after = base.Attribute(types.DateTime)
 
-    #! Specifies the DNS domain name and IP address for the system from which
-    #! the assertion subject was apparently authenticated.
+    # Specifies the DNS domain name and IP address for the system from which
+    # the assertion subject was apparently authenticated.
     subject_locality = Element(SubjectLocality)
 
-    #! The context used by the authenticating authority up to and including
-    #! the authentication event that yielded this statement.
+    # The context used by the authenticating authority up to and including
+    # the authentication event that yielded this statement.
     context = Element(AuthenticationContext)
 
 
@@ -295,19 +295,19 @@ class SubjectConfirmationData(Base):
     # TODO: Arbitrary attributes
     # TODO: Arbitrary elements
 
-    #! A time instant before which the subject cannot be confirmed.
+    # A time instant before which the subject cannot be confirmed.
     not_before = base.Attribute(types.DateTime)
 
-    #! A time instant at which the subject can no longer be confirmed.
+    # A time instant at which the subject can no longer be confirmed.
     not_on_or_after = base.Attribute(types.DateTime)
 
-    #! URI specifying to which an attesting entity can present the assertion.
+    # URI specifying to which an attesting entity can present the assertion.
     recipient = base.Attribute(types.String)
 
-    #! ID of a SAML message to the entity can present the assertion to.
+    # ID of a SAML message to the entity can present the assertion to.
     in_response_to = base.Attribute(types.String)
 
-    #! The network address to which the saml entity can present the assertion.
+    # The network address to which the saml entity can present the assertion.
     address = base.Attribute(types.String)
 
 
@@ -320,22 +320,22 @@ class SubjectConfirmation(Base):
 
     class Method:
 
-        #! URI namespace prefix of the values.
+        # URI namespace prefix of the values.
         _PREFIX = 'urn:oasis:names:tc:SAML:2.0:cm:'
 
-        #! The subject is confirmed by the indicated data.
+        # The subject is confirmed by the indicated data.
         BEARER = '{}bearer'.format(_PREFIX)
 
-        #! The subject is confirmed by the holding of a key.
+        # The subject is confirmed by the holding of a key.
         HOLDER_OF_KEY = '{}holder-of-key'.format(_PREFIX)
 
-    #! URI reference that identifies a protocol to confirm the subject.
+    # URI reference that identifies a protocol to confirm the subject.
     method = base.Attribute(types.String, required=True, default=Method.BEARER)
 
-    #! Identifies the entity expected to satisfy the enclosed requirements.
+    # Identifies the entity expected to satisfy the enclosed requirements.
     principal = Element(NameID)
 
-    #! Confirmation information and constraints.
+    # Confirmation information and constraints.
     data = Element(SubjectConfirmationData)
 
 
@@ -343,13 +343,13 @@ class Subject(Base):
     """The principal that is the subject of all statements in an assertion.
     """
 
-    #! Identifies the subject.
+    # Identifies the subject.
     principal = Element(NameID)
 
-    #! Information that allows the subject to be confirmed. If more than one
-    #! subject confirmation is provided, then satisfying any one of them is
-    #! sufficient to confirm the subject for the purpose of applying
-    #! the assertion.
+    # Information that allows the subject to be confirmed. If more than one
+    # subject confirmation is provided, then satisfying any one of them is
+    # sufficient to confirm the subject for the purpose of applying
+    # the assertion.
     confirmation = Element(SubjectConfirmation, collection=True)
 
 
@@ -364,13 +364,13 @@ class Conditions(Base):
     acceptable use of SAML assertions.
     """
 
-    #! A time instant before which the subject cannot be confirmed.
+    # A time instant before which the subject cannot be confirmed.
     not_before = base.Attribute(types.DateTime)
 
-    #! A time instant at which the subject can no longer be confirmed.
+    # A time instant at which the subject can no longer be confirmed.
     not_on_or_after = base.Attribute(types.DateTime)
 
-    #! Specifies that the assertion is addressed to a particular audience.
+    # Specifies that the assertion is addressed to a particular audience.
     condition = Element(Condition, collection=True)
 
 
@@ -402,18 +402,18 @@ class Assertion(_Message):
     all assertions [saml-core § 2.3.3].
     """
 
-    #! The subject of the statement(s) in the assertion.
+    # The subject of the statement(s) in the assertion.
     subject = Element(Subject)
 
-    #! Conditions that MUST be evaluated when assessing the validity
-    #! of and/or when using the assertion.
+    # Conditions that MUST be evaluated when assessing the validity
+    # of and/or when using the assertion.
     conditions = Element(Conditions)
 
-    #! Additional information related to the assertion that assists
-    #! processing in certain situations but which MAY be ignored by
-    #! applications that do not understand the advice or do not wish to
-    #! make use of it.
+    # Additional information related to the assertion that assists
+    # processing in certain situations but which MAY be ignored by
+    # applications that do not understand the advice or do not wish to
+    # make use of it.
     # TODO: <Advice/>
 
-    #! Statements that are being asserted about the included subject.
+    # Statements that are being asserted about the included subject.
     statements = Element(Statement, collection=True)

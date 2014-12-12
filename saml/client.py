@@ -81,4 +81,4 @@ def receive(method, query_string, body):
             relay_state = unquote_plus(relay_state[0])
 
         # Return the message and the relay state.
-        return schema.deserialize(message), relay_state
+        return message, relay_state

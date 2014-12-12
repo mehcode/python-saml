@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 from imp import load_source
-from os import path
 
 setup(
     name='saml',

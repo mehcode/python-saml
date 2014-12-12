@@ -46,12 +46,27 @@ def verify(xml, stream):
 
     # Find the <Signature/> node.
     signature_node = xmlsec.tree.find_node(xml, xmlsec.Node.SIGNATURE)
+    if signature_node is None:
+        # No `signature` node found; we cannot verify
+        return None
 
     # Create a digital signature context (no key manager is needed).
     ctx = xmlsec.SignatureContext()
 
+    # Register <Response/> and <Assertion/>
+    ctx.registerId(xml)
+    for assertion in xml.xpath("//*[local-name()='Assertion']"):
+        ctx.registerId(assertion)
+
     # Load the public key.
-    key = xmlsec.Key.from_memory(stream, xmlsec.KeyFormat.PEM)
+    key = None
+    for fmt in [
+            xmlsec.KeyFormat.PEM,
+            xmlsec.KeyFormat.CERT_PEM]:
+        stream.seek(0)
+        key = xmlsec.Key.from_memory(stream, fmt)
+        if key is not None:
+            break
 
     # Set the key on the context.
     ctx.key = key

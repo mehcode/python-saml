@@ -82,11 +82,11 @@ class _Message(Base):
 
     # The identifier for this message.
     id = base.Attribute(types.String, name='ID', required=True,
-                   default=lambda: '_%s' % uuid4().hex)
+                        default=lambda: '_%s' % uuid4().hex)
 
     # The time instant of issue in UTC.
     issue_instant = base.Attribute(types.DateTime, required=True,
-                              default=datetime.utcnow)
+                                   default=datetime.utcnow)
 
     # The SAML authority that is making the claim(s) in the message.
     issuer = Element(Issuer, required=True)
@@ -268,7 +268,7 @@ class AuthenticationStatement(Statement):
 
     # Specifies the time at which the authentication took place.
     authn_instant = base.Attribute(types.DateTime, required=True,
-                              default=datetime.utcnow)
+                                   default=datetime.utcnow)
 
     # Specifies the index of a particular session between the principal
     # identified by the subject and the authenticating authority.

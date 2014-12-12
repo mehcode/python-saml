@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-from .meta import version as VERSION
-from .saml import *
-from .samlp import *
-
+from .meta import version as VERSION  # noqa
+from .saml import *  # noqa
+from .samlp import *  # noqa
 
 
 def deserialize(xml):

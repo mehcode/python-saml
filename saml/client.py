@@ -2,7 +2,7 @@
 import base64
 import zlib
 import six
-from six.moves.urllib.parse import quote, urlencode, parse_qs, unquote_plus
+from six.moves.urllib.parse import urlencode, parse_qs, unquote_plus
 from lxml import etree
 from saml import schema
 from saml.schema.base import _element_registry

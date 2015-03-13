@@ -29,6 +29,21 @@ Check the [test suite](https://github.com/mehcode/python-saml/blob/master/tests/
 
 ## Install
 
+### Pre-Install
+
+#### Linux
+
+   ```sh
+   apt-get install libxml2-dev libxmlsec1-dev
+   ```
+
+#### Mac
+
+   ```sh
+   brew install libxml2 libxmlsec1
+   ```
+
+
 ### Automated
 
 1. **saml** can be installed through `easy_install` or `pip`.

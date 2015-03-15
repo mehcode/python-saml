@@ -73,8 +73,6 @@ def verify(xml, stream):
 
     # Verify the signature.
     try:
-        ctx.verify(signature_node)
+        return ctx.verify(signature_node)
     except RuntimeError:
         return False
-    else:
-        return True

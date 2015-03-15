@@ -43,6 +43,9 @@ setup(
             # Ensure PEP8 conformance.
             'pytest-pep8',
 
+            # Ensure PyFlakes conformance.
+            'pytest-flakes',
+
             # Ensure test coverage.
             'pytest-cov',
         )

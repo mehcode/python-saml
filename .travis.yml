@@ -12,6 +12,6 @@ install:
   - 'travis_retry pip install -e ".[test]" --use-mirrors'
   - 'travis_retry pip install coveralls --use-mirrors'
 
-script: 'py.test --pep8 --cov saml'
+script: 'py.test --pep8 --flakes --cov saml'
 
 after_success: 'coveralls'

@@ -9,13 +9,14 @@ Language (SAML) v2.0 messages.
 """
 # Version of the library.
 from ._version import __version__, __version_info__  # noqa
-VERSION = __version__
 
 # Version of the SAML standard supported.
 from .schema import VERSION as SAML_VERSION
 
 from .signature import sign, verify
 from . import client
+
+VERSION = __version__
 
 __all__ = [
     'VERSION',

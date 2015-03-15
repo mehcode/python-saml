@@ -1,4 +1,5 @@
 import saml
+import xmlsec
 from saml import schema
 from saml.schema import utils
 from datetime import datetime
@@ -279,13 +280,27 @@ def test_signed_deserialize(name):
     assert_node(expected, result)
 
 
-# NAMES = [
-#     'assertion',
-#     'response',
-#     'logout-response',
-#     'artifact-resolve',
-#     'artifact-response'
-# ]
+@mark.parametrize('name', NAMES)
+def test_generic_deserialize(name):
+    filename = path.join(BASE_DIR, '%s-simple.xml' % name)
+    parser = etree.XMLParser(
+        ns_clean=True, remove_blank_text=True, remove_comments=True)
+    target = etree.parse(filename, parser).getroot()
+
+    build_fn_name = ('build-%s-simple' % name).replace('-', '_')
+    expected = globals()[build_fn_name]().serialize()
+
+    result = schema.deserialize(target).serialize()
+
+    assert_node(expected, result)
+
+
+def test_generic_deserialize_outside_registry():
+    xml = build_authentication_request_simple().serialize()
+    xml.tag = 'BadTagName'
+    result = schema.deserialize(xml)
+
+    assert result is None
 
 
 @mark.parametrize('name', NAMES)
@@ -306,10 +321,6 @@ def test_sign(name):
         # Sign the result.
         saml.sign(result, stream)
 
-    # print()
-    # print(etree.tostring(result).decode('utf8'))
-    # print()
-
     # Compare the nodes.
     assert_node(expected, result)
 
@@ -323,3 +334,24 @@ def test_verify(name):
     # Sign the result.
     with open(path.join(BASE_DIR, 'rsapub.pem'), 'r') as stream:
         assert saml.verify(expected, stream)
+
+
+@mark.parametrize('name', NAMES)
+def test_verify_with_bad_signature_returns_False(name):
+    filename = path.join(BASE_DIR, '%s-signed.xml' % name)
+    expected = etree.parse(filename).getroot()
+
+    signature_node = xmlsec.tree.find_node(expected, xmlsec.Node.SIGNATURE)
+    signature_node.clear()
+
+    with open(path.join(BASE_DIR, 'rsapub.pem'), 'r') as stream:
+        assert saml.verify(expected, stream) is False
+
+
+@mark.parametrize('name', NAMES)
+def test_verify_with_no_signature_returns_False(name):
+    filename = path.join(BASE_DIR, '%s-simple.xml' % name)
+    expected = etree.parse(filename).getroot()
+
+    with open(path.join(BASE_DIR, 'rsapub.pem'), 'r') as stream:
+        assert saml.verify(expected, stream) is False

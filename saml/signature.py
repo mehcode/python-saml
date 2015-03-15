@@ -48,7 +48,7 @@ def verify(xml, stream):
     signature_node = xmlsec.tree.find_node(xml, xmlsec.Node.SIGNATURE)
     if signature_node is None:
         # No `signature` node found; we cannot verify
-        return None
+        return False
 
     # Create a digital signature context (no key manager is needed).
     ctx = xmlsec.SignatureContext()
@@ -72,4 +72,7 @@ def verify(xml, stream):
     ctx.key = key
 
     # Verify the signature.
-    return ctx.verify(signature_node)
+    try:
+        return ctx.verify(signature_node)
+    except RuntimeError:
+        return False

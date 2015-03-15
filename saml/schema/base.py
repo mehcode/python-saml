@@ -55,6 +55,10 @@ class Declarative(type):
         # This is not derived at all from Resource (eg. is base).
         return False
 
+    @classmethod
+    def _get_attributes_dict(cls, obj):
+        return {n: getattr(obj, n) for n in dir(obj)}
+
     def __new__(cls, name, bases, attrs):
         # Only continue if we are dervied from declarative.
         if not cls._is_derived(name, bases):
@@ -64,7 +68,6 @@ class Declarative(type):
         # Gather the attributes of all options classes.
         # Start with the base configuration.
         metadata = {}
-        values = lambda x: {n: getattr(x, n) for n in dir(x)}
 
         # Expand the options class with the gathered metadata.
         base_meta = []
@@ -72,12 +75,12 @@ class Declarative(type):
 
         # Apply the configuration from each class in the chain.
         for meta in base_meta:
-            metadata.update(**values(meta))
+            metadata.update(**cls._get_attributes_dict(meta))
 
         # Apply the configuration from the current class.
         cur_meta = {}
         if attrs.get('Meta'):
-            cur_meta = values(attrs['Meta'])
+            cur_meta = cls._get_attributes_dict(attrs['Meta'])
             metadata.update(**cur_meta)
 
         # Gather and construct the options object.
@@ -93,8 +96,8 @@ class Declarative(type):
                 attrs['_items'].update(values)
 
         # Collect attributes from current class.
-        test = lambda x: issubclass(type(x[1]), Component)
-        attrs_l = list(filter(test, attrs.items()))
+        attrs_l = list(filter(lambda x: issubclass(type(x[1]), Component),
+                              attrs.items()))
         attrs_l.sort(key=lambda x: x[1].creation_counter)
         for key, attr in attrs_l:
             # If name reference is null; default to camel-cased name.

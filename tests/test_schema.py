@@ -303,15 +303,6 @@ def test_generic_deserialize_outside_registry():
     assert result is None
 
 
-# NAMES = [
-#     'assertion',
-#     'response',
-#     'logout-response',
-#     'artifact-resolve',
-#     'artifact-response'
-# ]
-
-
 @mark.parametrize('name', NAMES)
 def test_sign(name):
     # Load the expected result.
@@ -329,10 +320,6 @@ def test_sign(name):
     with open(path.join(BASE_DIR, 'rsakey.pem'), 'r') as stream:
         # Sign the result.
         saml.sign(result, stream)
-
-    # print()
-    # print(etree.tostring(result).decode('utf8'))
-    # print()
 
     # Compare the nodes.
     assert_node(expected, result)
@@ -358,7 +345,7 @@ def test_verify_with_bad_signature_returns_False(name):
     signature_node.clear()
 
     with open(path.join(BASE_DIR, 'rsapub.pem'), 'r') as stream:
-        assert saml.verify(expected, stream) == False
+        assert saml.verify(expected, stream) is False
 
 
 @mark.parametrize('name', NAMES)
@@ -367,4 +354,4 @@ def test_verify_with_no_signature_returns_False(name):
     expected = etree.parse(filename).getroot()
 
     with open(path.join(BASE_DIR, 'rsapub.pem'), 'r') as stream:
-        assert saml.verify(expected, stream) == False
+        assert saml.verify(expected, stream) is False

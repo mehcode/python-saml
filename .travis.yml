@@ -9,8 +9,8 @@ before_install:
   - 'travis_retry pip install Cython --use-mirrors'
 
 install:
-  - 'travis_retry pip install -e ".[test]" --use-mirrors'
-  - 'travis_retry pip install coveralls --use-mirrors'
+  - 'travis_retry pip install -e ".[test]"'
+  - 'travis_retry pip install coveralls'
 
 script: 'py.test --pep8 --flakes --cov saml'
 

@@ -5,7 +5,7 @@ from saml.schema import utils
 from datetime import datetime
 from lxml import etree
 from os import path
-from pytest import mark, raises
+from pytest import mark
 
 BASE_DIR = path.abspath(path.dirname(__file__))
 

@@ -1,4 +1,0 @@
-Signing
-=======
-
-.. automodule:: saml.signature

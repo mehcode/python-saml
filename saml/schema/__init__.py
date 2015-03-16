@@ -1,4 +1,25 @@
 # -*- coding: utf-8 -*-
+
+"""
+Create XML documents in accordance with the SAML 2.0 specification
+
+AuthnRequest
+------------
+.. autoclass:: saml.schema.AuthenticationRequest
+
+Response
+--------
+.. autoclass:: saml.schema.Response
+
+LogoutRequest
+-------------
+.. autoclass:: saml.schema.LogoutRequest
+
+LogoutResponse
+--------------
+.. autoclass:: saml.schema.LogoutResponse
+"""
+
 from .meta import version as VERSION  # noqa
 from .saml import *  # noqa
 from .samlp import *  # noqa

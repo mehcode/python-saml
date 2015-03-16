@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Security Assertion Markup Language (SAML) v2.0
-
+"""
 A python interface to produce and consume Security Assertion Markup
 Language (SAML) v2.0 messages.
 
-@par References
-    - https://www.oasis-open.org/standards#samlv2.0
+See: https://www.oasis-open.org/standards#samlv2.0
 """
 # Version of the library.
 from ._version import __version__, __version_info__  # noqa

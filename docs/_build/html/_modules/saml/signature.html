@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>saml.signature &mdash; python-saml 0.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="python-saml 0.7.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">python-saml 0.7.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for saml.signature</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Sign and verify signatures using the `python-xmlsec` library.</span>
+
+<span class="sd">.. autofunction:: sign</span>
+<span class="sd">.. autofunction:: verify</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="sign"><a class="viewcode-back" href="../../signing_documents.html#saml.signature.sign">[docs]</a><span class="k">def</span> <span class="nf">sign</span><span class="p">(</span><span class="n">xml</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sign an XML document with the given private key file. This will add a</span>
+<span class="sd">    &lt;Signature&gt; element to the document.</span>
+
+<span class="sd">    :param lxml.etree._Element xml: The document to sign</span>
+<span class="sd">    :param file stream: The private key to sign the document with</span>
+<span class="sd">    :param str password: The password used to access the private key</span>
+
+<span class="sd">    :rtype: None</span>
+
+<span class="sd">    Example usage:</span>
+<span class="sd">    ::</span>
+<span class="sd">        from saml import schema</span>
+<span class="sd">        from lxml import etree</span>
+
+<span class="sd">        document = schema.AuthenticationRequest()</span>
+<span class="sd">        xml_document = document.serialize()</span>
+<span class="sd">        with open(&#39;my_key_file.pem&#39;, &#39;r+&#39;) as stream:</span>
+<span class="sd">            sign(xml_document, stream)</span>
+
+<span class="sd">        print etree.tostring(xml_document)</span>
+
+<span class="sd">    Produces the following XML document:</span>
+
+<span class="sd">    .. code-block:: xml</span>
+
+<span class="sd">        &lt;samlp:AuthnRequest</span>
+<span class="sd">            xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;</span>
+<span class="sd">            xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;</span>
+<span class="sd">            Version=&quot;2.0&quot; ID=&quot;_6087de0b111b44349a70ff40191a4c0c&quot;</span>
+<span class="sd">            IssueInstant=&quot;2015-03-16T21:06:39Z&quot;&gt;</span>
+<span class="sd">            &lt;Signature xmlns=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;</span>
+<span class="sd">                &lt;SignedInfo&gt;</span>
+<span class="sd">                    &lt;CanonicalizationMethod</span>
+<span class="sd">                        Algorithm=&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot;/&gt;</span>
+<span class="sd">                        &lt;SignatureMethod</span>
+<span class="sd">                            Algorithm=&quot;http://www.w3.org/2000/</span>
+<span class="sd">                            09/xmldsig#rsa-sha1&quot;/&gt;</span>
+<span class="sd">                            &lt;Reference&gt;</span>
+<span class="sd">                                &lt;Transforms&gt;</span>
+<span class="sd">                                    &lt;Transform</span>
+<span class="sd">                                        Algorithm=&quot;http://www.w3.org/2000/</span>
+<span class="sd">                                        09/xmldsig#enveloped-signature&quot;/&gt;</span>
+<span class="sd">                                &lt;/Transforms&gt;</span>
+<span class="sd">                                &lt;DigestMethod</span>
+<span class="sd">                                    Algorithm=&quot;http://www.w3.org/2000/</span>
+<span class="sd">                                    09/xmldsig#sha1&quot;/&gt;</span>
+<span class="sd">                                    &lt;DigestValue&gt;</span>
+<span class="sd">                                        94O1FOjRE4JQYVDqStkYzne9StQ=</span>
+<span class="sd">                                    &lt;/DigestValue&gt;</span>
+<span class="sd">                            &lt;/Reference&gt;</span>
+<span class="sd">                &lt;/SignedInfo&gt;</span>
+<span class="sd">                &lt;SignatureValue&gt;</span>
+<span class="sd">                    aFYRRjtB3bDyLLJzLZmsn0K4SXmOpFYJ+8R8D31VojgiF37FOElbE56UFbm8BAjn</span>
+<span class="sd">                    l2AixrUGXP4djxoxxnfBD/reYw5yVuIVXlMxKec784nF2V4GyrfwJOKaNmlVPkq5</span>
+<span class="sd">                    c8SI+EkKJ02mwiail0Zvjb9FzwvlYD+osMSXvJXVqnGHQDVFlhwbBRRVB6t44/M3</span>
+<span class="sd">                    TzC4mLSVhuvcpsm4GTQSpGkHP7HvweKN/OTc0aTy8Kh/YUrImwnUCii+J0EW4nGg</span>
+<span class="sd">                    71eZyq/IiSPnTD09WDHsWe3g29kpicZXqrQCWeLE2zfVKtyxxs7PyEmodH19jXyz</span>
+<span class="sd">                    wh9hQ8t6PFO47Ros5aV0bw==</span>
+<span class="sd">                &lt;/SignatureValue&gt;</span>
+<span class="sd">            &lt;/Signature&gt;</span>
+<span class="sd">        &lt;/samlp:AuthnRequest&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># Import xmlsec here to delay initializing the C library in</span>
+    <span class="c"># case we don&#39;t need it.</span>
+    <span class="kn">import</span> <span class="nn">xmlsec</span>
+
+    <span class="c"># Resolve the SAML/2.0 element in question.</span>
+    <span class="kn">from</span> <span class="nn">saml.schema.base</span> <span class="kn">import</span> <span class="n">_element_registry</span>
+    <span class="n">element</span> <span class="o">=</span> <span class="n">_element_registry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">xml</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+
+    <span class="c"># Create a signature template for RSA-SHA1 enveloped signature.</span>
+    <span class="n">signature_node</span> <span class="o">=</span> <span class="n">xmlsec</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+        <span class="n">xml</span><span class="p">,</span>
+        <span class="n">xmlsec</span><span class="o">.</span><span class="n">Transform</span><span class="o">.</span><span class="n">EXCL_C14N</span><span class="p">,</span>
+        <span class="n">xmlsec</span><span class="o">.</span><span class="n">Transform</span><span class="o">.</span><span class="n">RSA_SHA1</span><span class="p">)</span>
+
+    <span class="c"># Add the &lt;ds:Signature/&gt; node to the document.</span>
+    <span class="n">xml</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">signature_index</span><span class="p">,</span> <span class="n">signature_node</span><span class="p">)</span>
+
+    <span class="c"># Add the &lt;ds:Reference/&gt; node to the signature template.</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="n">xmlsec</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">add_reference</span><span class="p">(</span>
+        <span class="n">signature_node</span><span class="p">,</span> <span class="n">xmlsec</span><span class="o">.</span><span class="n">Transform</span><span class="o">.</span><span class="n">SHA1</span><span class="p">)</span>
+
+    <span class="c"># Add the enveloped transform descriptor.</span>
+    <span class="n">xmlsec</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">add_transform</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">xmlsec</span><span class="o">.</span><span class="n">Transform</span><span class="o">.</span><span class="n">ENVELOPED</span><span class="p">)</span>
+
+    <span class="c"># Create a digital signature context (no key manager is needed).</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">xmlsec</span><span class="o">.</span><span class="n">SignatureContext</span><span class="p">()</span>
+
+    <span class="c"># Load private key.</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">xmlsec</span><span class="o">.</span><span class="n">Key</span><span class="o">.</span><span class="n">from_memory</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">xmlsec</span><span class="o">.</span><span class="n">KeyFormat</span><span class="o">.</span><span class="n">PEM</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+
+    <span class="c"># Set the key on the context.</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+
+    <span class="c"># Sign the template.</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">signature_node</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="verify"><a class="viewcode-back" href="../../signing_documents.html#saml.signature.verify">[docs]</a><span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="n">xml</span><span class="p">,</span> <span class="n">stream</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verify the signaure of an XML document with the given certificate.</span>
+<span class="sd">    Returns `True` if the document is signed with a valid signature.</span>
+<span class="sd">    Returns `False` if the document is not signed or if the signature is</span>
+<span class="sd">    invalid.</span>
+
+<span class="sd">    :param lxml.etree._Element xml: The document to sign</span>
+<span class="sd">    :param file stream: The private key to sign the document with</span>
+
+<span class="sd">    :rtype: Boolean</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Import xmlsec here to delay initializing the C library in</span>
+    <span class="c"># case we don&#39;t need it.</span>
+    <span class="kn">import</span> <span class="nn">xmlsec</span>
+
+    <span class="c"># Find the &lt;Signature/&gt; node.</span>
+    <span class="n">signature_node</span> <span class="o">=</span> <span class="n">xmlsec</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">find_node</span><span class="p">(</span><span class="n">xml</span><span class="p">,</span> <span class="n">xmlsec</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">SIGNATURE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">signature_node</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c"># No `signature` node found; we cannot verify</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="c"># Create a digital signature context (no key manager is needed).</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">xmlsec</span><span class="o">.</span><span class="n">SignatureContext</span><span class="p">()</span>
+
+    <span class="c"># Register &lt;Response/&gt; and &lt;Assertion/&gt;</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">registerId</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">assertion</span> <span class="ow">in</span> <span class="n">xml</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">&quot;//*[local-name()=&#39;Assertion&#39;]&quot;</span><span class="p">):</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">registerId</span><span class="p">(</span><span class="n">assertion</span><span class="p">)</span>
+
+    <span class="c"># Load the public key.</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">xmlsec</span><span class="o">.</span><span class="n">KeyFormat</span><span class="o">.</span><span class="n">PEM</span><span class="p">,</span>
+            <span class="n">xmlsec</span><span class="o">.</span><span class="n">KeyFormat</span><span class="o">.</span><span class="n">CERT_PEM</span><span class="p">]:</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">xmlsec</span><span class="o">.</span><span class="n">Key</span><span class="o">.</span><span class="n">from_memory</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="c"># Set the key on the context.</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+
+    <span class="c"># Verify the signature.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ctx</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">signature_node</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Ryan Leckey.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.2</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

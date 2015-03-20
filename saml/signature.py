@@ -136,9 +136,9 @@ def verify(xml, stream):
     ctx = xmlsec.SignatureContext()
 
     # Register <Response/> and <Assertion/>
-    ctx.registerId(xml)
+    ctx.register_id(xml)
     for assertion in xml.xpath("//*[local-name()='Assertion']"):
-        ctx.registerId(assertion)
+        ctx.register_id(assertion)
 
     # Load the public key.
     key = None
@@ -155,6 +155,9 @@ def verify(xml, stream):
 
     # Verify the signature.
     try:
-        return ctx.verify(signature_node)
-    except RuntimeError:
+        ctx.verify(signature_node)
+
+        return True
+
+    except Exception:
         return False

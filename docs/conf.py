@@ -3,6 +3,8 @@
 import sys
 import os
 
+import sphinx_rtd_theme
+
 sys.path.insert(0, os.path.abspath('../'))
 
 from saml import __version__  # noqa
@@ -28,7 +30,8 @@ release = version
 exclude_patterns = ['_build']
 pygments_style = 'sphinx'
 todo_include_todos = False
-html_theme = 'alabaster'
+html_theme = "sphinx_rtd_theme"
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_static_path = ['_static']
 htmlhelp_basename = 'python-samldoc'
 latex_elements = {}

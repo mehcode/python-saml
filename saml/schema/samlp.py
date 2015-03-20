@@ -80,6 +80,44 @@ class Protocol:
 
 
 class AuthenticationRequest(_Message):
+    """
+    Create a SAML AuthnRequest
+    ::
+        from saml import schema
+        from datetime import datetime
+
+        document = schema.AuthenticationRequest()
+        document.id = '11111111-2222-3333-4444-555555555555'
+        document.issue_instant = datetime(2000, 1, 1)
+        document.assertion_consumer_service_index = 0
+        document.attribute_consuming_service_index = 0
+        document.issuer = 'https://sp.example.com/SAML2'
+
+        policy = schema.NameIDPolicy()
+        policy.allow_create = True
+        policy.format = schema.NameID.Format.TRANSIENT
+        document.policy = policy
+
+        print document.tostring()
+
+    Produces the following XML document:
+
+    .. code-block:: xml
+
+        <samlp:AuthnRequest
+            xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+            xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+            Version="2.0"
+            ID="11111111-2222-3333-4444-555555555555"
+            IssueInstant="2000-01-01T00:00:00Z"
+            AssertionConsumerServiceIndex="0"
+            AttributeConsumingServiceIndex="0">
+            <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>
+            <samlp:NameIDPolicy
+                Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
+                AllowCreate="true"/>
+        </samlp:AuthnRequest>
+    """
 
     class Meta:
         name = 'AuthnRequest'
@@ -236,8 +274,113 @@ class StatusResponse(_Message):
 
 class Response(StatusResponse):
     """
-    Used when a response consists of a list of zero or more assertions
-    that satisfy the request.
+    Create a SAML Response
+    ::
+        from saml import schema
+        from datetime import datetime
+
+        document = schema.Response()
+        document.id = '11111111-1111-1111-1111-111111111111'
+        document.in_response_to = '22222222-2222-2222-2222-222222222222'
+        document.issue_instant = datetime(2000, 1, 1, 1)
+        document.issuer = 'https://idp.example.org/SAML2'
+        document.destination = 'https://sp.example.com/SAML2/SSO/POST'
+        document.status.code.value = schema.StatusCode.SUCCESS
+
+        # Create an assertion for the response.
+        document.assertions = assertion = schema.Assertion()
+        assertion.id = '33333333-3333-3333-3333-333333333333'
+        assertion.issue_instant = datetime(2000, 1, 1, 2)
+        assertion.issuer = 'https://idp.example.org/SAML2'
+
+        # Create a subject.
+        assertion.subject = schema.Subject()
+        assertion.subject.principal = '44444444-4444-4444-4444-444444444444'
+        assertion.subject.principal.format = schema.NameID.Format.TRANSIENT
+        data = schema.SubjectConfirmationData()
+        data.in_response_to = '22222222-2222-2222-2222-222222222222'
+        data.not_on_or_after = datetime(2000, 1, 1, 1, 10)
+        data.recipient = 'https://sp.example.com/SAML2/SSO/POST'
+        confirmation = schema.SubjectConfirmation()
+        confirmation.data = data
+        assertion.subject.confirmation = confirmation
+
+        # Create an authentication statement.
+        statement = schema.AuthenticationStatement()
+        assertion.statements.append(statement)
+        statement.authn_instant = datetime(2000, 1, 1, 1, 3)
+        statement.session_index = '33333333-3333-3333-3333-333333333333'
+        reference = schema.AuthenticationContextReference
+        statement.context.reference = reference.PASSWORD_PROTECTED_TRANSPORT
+
+        # Create a authentication condition.
+        assertion.conditions = conditions = schema.Conditions()
+        conditions.not_before = datetime(2000, 1, 1, 1, 3)
+        conditions.not_on_or_after = datetime(2000, 1, 1, 1, 9)
+        condition = schema.AudienceRestriction()
+        condition.audiences = 'https://sp.example.com/SAML2'
+        conditions.condition = condition
+
+        print document.tostring()
+
+    Produces the following XML document:
+
+    .. code-block:: xml
+
+        <samlp:Response
+            xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+            xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+            Version="2.0"
+            ID="11111111-1111-1111-1111-111111111111"
+            IssueInstant="2000-01-01T01:00:00Z"
+            Destination="https://sp.example.com/SAML2/SSO/POST"
+            InResponseTo="22222222-2222-2222-2222-222222222222">
+            <saml:Issuer>https://idp.example.org/SAML2</saml:Issuer>
+            <samlp:Status>
+                <samlp:StatusCode
+                    Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+            </samlp:Status>
+            <saml:Assertion
+                Version="2.0"
+                ID="33333333-3333-3333-3333-333333333333"
+                IssueInstant="2000-01-01T02:00:00Z">
+                <saml:Issuer>https://idp.example.org/SAML2</saml:Issuer>
+                <saml:Subject>
+                    <saml:NameID
+                        Format=
+                        "urn:oasis:names:tc:SAML:2.0:nameid-format:transient">
+                        44444444-4444-4444-4444-444444444444
+                    </saml:NameID>
+                    <saml:SubjectConfirmation
+                        Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+                        <saml:SubjectConfirmationData
+                            NotOnOrAfter="2000-01-01T01:10:00Z"
+                            Recipient="https://sp.example.com/SAML2/SSO/POST"
+                            InResponseTo=
+                            "22222222-2222-2222-2222-222222222222"/>
+                    </saml:SubjectConfirmation>
+                </saml:Subject>
+                <saml:Conditions
+                    NotBefore="2000-01-01T01:03:00Z"
+                    NotOnOrAfter="2000-01-01T01:09:00Z">
+                    <saml:AudienceRestriction>
+                        <saml:Audience>
+                            https://sp.example.com/SAML2
+                        </saml:Audience>
+                    </saml:AudienceRestriction>
+                </saml:Conditions>
+                <saml:AuthnStatement
+                    AuthnInstant="2000-01-01T01:03:00Z"
+                    SessionIndex="33333333-3333-3333-3333-333333333333">
+                    <saml:AuthnContext>
+                        <saml:AuthnContextClassRef>
+                            urn:oasis:names:tc:SAML:2.0:ac:classes:
+                            PasswordProtectedTransport
+                        </saml:AuthnContextClassRef>
+                    </saml:AuthnContext>
+                </saml:AuthnStatement>
+            </saml:Assertion>
+        </samlp:Response>
     """
 
     # Specifies an assertion by value, or optionally an encrypted assertion
@@ -281,8 +424,44 @@ class SessionIndex(Base):
 
 class LogoutRequest(_Message):
     """
-    A session participant or session authority sends a <LogoutRequest>
-    message to indicate that a session has been terminated.
+    Create a SAML LogoutRequest
+    ::
+        from saml import schema
+        from datetime import datetime
+
+        document = schema.LogoutRequest()
+        document.id = '11111111-1111-1111-1111-111111111111'
+        document.issue_instant = datetime(2000, 1, 1)
+        document.issuer = 'https://idp.example.org/SAML2'
+        document.destination = 'https://sp.example.org/SAML2/logout'
+        document.principal = 'myemail@mydomain.com'
+        document.principal.format = schema.NameID.Format.EMAIL
+        document.principal.name_qualifier = 'https://idp.example.org/SAML2'
+        document.session_index = 'SESSION-22222222-2222-2222-2222-222222222222'
+
+        print document.tostring()
+
+    Produces the following XML document:
+
+    .. code-block:: xml
+
+        <samlp:LogoutRequest
+            xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+            xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+            Version="2.0"
+            ID="11111111-1111-1111-1111-111111111111"
+            IssueInstant="2000-01-01T00:00:00Z"
+            Destination="https://idphost/adfs/ls/">
+            <saml:Issuer>https://idp.example.org/SAML2</saml:Issuer>
+            <saml:NameID
+                NameQualifier="https://idp.example.org/SAML2"
+                Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress">
+                myemail@mydomain.com
+            </saml:NameID>
+            <samlp:SessionIndex>
+                SESSION-22222222-2222-2222-2222-222222222222
+            </samlp:SessionIndex>
+        </samlp:LogoutRequest>
     """
 
     # The time at which the request expires, after which the recipient
@@ -305,6 +484,37 @@ class LogoutRequest(_Message):
 
 class LogoutResponse(StatusResponse):
     """
-    The message returned to the client when all sessions have been
-    terminated by a <LogoutRequest>.
+    Create a SAML LogoutResponse
+    ::
+        from saml import schema
+        from datetime import datetime
+
+        document = schema.LogoutResponse()
+        document.id = '22222222-2222-2222-2222-222222222222'
+        document.in_response_to = '11111111-1111-1111-1111-111111111111'
+        document.issue_instant = datetime(2000, 1, 1)
+        document.issuer = 'https://idp.example.org/SAML2'
+        document.destination = 'https://sp.example.com/SAML2/SLO/POST'
+        document.status.code.value = schema.StatusCode.SUCCESS
+
+        print document.tostring()
+
+    Produces the following XML document:
+
+    .. code-block:: xml
+
+        <samlp:LogoutResponse
+            xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+            xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+            Version="2.0"
+            ID="22222222-2222-2222-2222-222222222222"
+            IssueInstant="2000-01-01T00:00:00Z"
+            Destination="https://sp.example.com/SAML2/SLO/POST"
+            InResponseTo="11111111-1111-1111-1111-111111111111">
+            <saml:Issuer>https://idp.example.org/SAML2</saml:Issuer>
+            <samlp:Status>
+                <samlp:StatusCode
+                    Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+            </samlp:Status>
+        </samlp:LogoutResponse>
     """

@@ -11,3 +11,6 @@
 *.pyc
 *.pyo
 *.egg-info
+
+# Sphinx
+/docs/_build

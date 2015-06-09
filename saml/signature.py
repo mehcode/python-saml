@@ -146,9 +146,12 @@ def verify(xml, stream):
             xmlsec.KeyFormat.PEM,
             xmlsec.KeyFormat.CERT_PEM]:
         stream.seek(0)
-        key = xmlsec.Key.from_memory(stream, fmt)
-        if key is not None:
+        try:
+            key = xmlsec.Key.from_memory(stream, fmt)
             break
+        except ValueError:  
+            # xmlsec now throws when it can't load the key
+            pass
 
     # Set the key on the context.
     ctx.key = key

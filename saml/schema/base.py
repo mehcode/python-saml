@@ -446,4 +446,4 @@ class Base(six.with_metaclass(Declarative)):
 
     @classmethod
     def fromstring(cls, text):
-        return cls.deserialized(etree.XML(text))
+        return cls.deserialize(etree.XML(text))
